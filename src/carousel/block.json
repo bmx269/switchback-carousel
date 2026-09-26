@@ -1,0 +1,63 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "switchback-carousel/carousel",
+	"version": "1.0.0",
+	"title": "Carousel",
+	"category": "media",
+	"description": "A slider of hand-built slides or slides generated from posts. Put controls, headings and other blocks anywhere around the slides.",
+	"keywords": [
+		"slider",
+		"slideshow",
+		"carousel",
+		"posts",
+		"gallery"
+	],
+	"textdomain": "switchback-carousel",
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "wide"
+		},
+		"overlayControls": {
+			"type": "boolean",
+			"default": false
+		}
+	},
+	"providesContext": {
+		"switchback-carousel/overlayControls": "overlayControls"
+	},
+	"supports": {
+		"align": [
+			"wide",
+			"full"
+		],
+		"anchor": true,
+		"html": false,
+		"color": {
+			"background": true,
+			"text": true,
+			"link": true,
+			"heading": true
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"layout": {
+			"allowSwitching": false,
+			"allowInheriting": true,
+			"default": {
+				"type": "constrained"
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"render": "file:./render.php"
+}

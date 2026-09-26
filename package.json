@@ -1,0 +1,58 @@
+{
+  "name": "switchback-carousel",
+  "version": "1.0.0",
+  "description": "Carousel blocks with hand-built slides or one slide per post from any post type, filterable by terms and core or SCF/ACF fields. Built on Splide.",
+  "author": "Trent Stromkins",
+  "license": "GPL-2.0-or-later",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:icons && wp-scripts build",
+    "start": "wp-scripts start",
+    "lint:js": "wp-scripts lint-js ./src ./tests playwright.config.js",
+    "lint:css": "wp-scripts lint-style './src/**/*.scss'",
+    "test:unit": "wp-scripts test-unit-js",
+    "plugin-zip": "npm run build && wp-scripts plugin-zip",
+    "update-pot": "wp i18n make-pot . languages/switchback-carousel.pot --exclude=build,node_modules",
+    "build:icons": "node scripts/build-icons.mjs",
+    "env:start": "wp-env start",
+    "env:stop": "wp-env stop",
+    "env:destroy": "wp-env destroy",
+    "test:php": "wp-env run tests-cli --env-cwd=wp-content/plugins/switchback-carousel vendor/bin/phpunit",
+    "test:e2e": "wp-scripts test-playwright",
+    "lint:php": "composer run lint"
+  },
+  "files": [
+    "switchback-carousel.php",
+    "includes",
+    "build",
+    "src",
+    "readme.txt",
+    "LICENSE",
+    "package.json"
+  ],
+  "dependencies": {
+    "@splidejs/splide": "^4.1.4",
+    "@splidejs/splide-extension-auto-scroll": "^0.5.3",
+    "@wordpress/api-fetch": "^7.56.0",
+    "@wordpress/block-editor": "^18.0.0",
+    "@wordpress/blocks": "^16.1.0",
+    "@wordpress/components": "^41.0.0",
+    "@wordpress/compose": "^8.9.0",
+    "@wordpress/core-data": "^8.1.0",
+    "@wordpress/data": "^10.56.0",
+    "@wordpress/element": "^8.8.0",
+    "@wordpress/i18n": "^6.29.0"
+  },
+  "devDependencies": {
+    "@phosphor-icons/core": "^2.1.1",
+    "@playwright/test": "^1.63.0",
+    "@wordpress/e2e-test-utils-playwright": "^2.1.0",
+    "@wordpress/env": "^11.16.0",
+    "@wordpress/scripts": "^35.0.0"
+  },
+  "homepage": "https://github.com/bmx269/switchback-carousel",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bmx269/switchback-carousel.git"
+  }
+}

@@ -1,0 +1,96 @@
+/**
+ * Editor: slides side by side, sized like the front end.
+ */
+
+.switchback-editor {
+	--switchback-columns: 3;
+	--switchback-gap: 1.5rem;
+	--switchback-peek: 0%;
+	position: relative;
+}
+
+.switchback-editor__strip {
+	display: flex;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	gap: var(--switchback-gap);
+	padding-inline-end: var(--switchback-peek);
+	padding-bottom: 8px;
+	overflow-x: auto;
+	scroll-snap-type: x proximity;
+}
+
+.switchback-editor__strip > .wp-block-switchback-carousel-slide,
+.switchback-editor__strip > .switchback-editor__cell {
+	box-sizing: border-box;
+	flex: 0 0 calc((100% - (var(--switchback-columns) - 1) * var(--switchback-gap)) / var(--switchback-columns));
+	min-width: 0;
+	max-width: var(--switchback-max-width, none);
+	margin: 0 !important;
+	scroll-snap-align: start;
+}
+
+/* In query mode only the first slide is the design; extras stay hidden. */
+.switchback-editor__design > .wp-block-switchback-carousel-slide:not(:first-child) {
+	display: none;
+}
+
+.switchback-editor__preview {
+	cursor: pointer;
+	opacity: 0.8;
+	transition: opacity 0.15s ease-out;
+
+	&:hover,
+	&:focus-visible {
+		outline: 1px dashed currentcolor;
+		opacity: 1;
+	}
+}
+
+/* Core positions the appender absolutely; keep it at the end of the strip. */
+.switchback-editor__strip > .block-list-appender {
+	position: static;
+	flex: 0 0 auto;
+	align-self: center;
+	margin: 0;
+}
+
+.switchback-editor__add {
+	display: flex;
+	flex: 0 0 auto;
+	flex-direction: column;
+	align-self: center;
+	gap: 8px;
+}
+
+.switchback-editor__status {
+	display: grid;
+	min-height: 120px;
+	place-items: center;
+}
+
+.switchback-editor__icons {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 4px;
+	margin-bottom: 16px;
+
+	.components-button {
+		justify-content: center;
+		height: 44px;
+
+		svg {
+			width: 24px;
+			height: 24px;
+		}
+	}
+}
+
+.switchback-editor__rule {
+	display: grid;
+	gap: 8px;
+	margin: 0 0 12px;
+	padding: 12px;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+}

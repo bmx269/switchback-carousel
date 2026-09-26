@@ -1,0 +1,90 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "switchback-carousel/controls",
+	"version": "1.0.0",
+	"title": "Carousel Controls",
+	"category": "media",
+	"description": "Previous/next arrows, pagination, a progress bar, a slide counter or a play/pause button for the carousel it's in.",
+	"ancestor": [
+		"switchback-carousel/carousel"
+	],
+	"textdomain": "switchback-carousel",
+	"usesContext": [
+		"switchback-carousel/overlayControls"
+	],
+	"attributes": {
+		"align": {
+			"type": "string",
+			"default": "wide"
+		},
+		"control": {
+			"type": "string",
+			"enum": [
+				"arrows",
+				"pagination",
+				"progress",
+				"counter",
+				"playpause"
+			],
+			"default": "arrows"
+		},
+		"icon": {
+			"type": "object",
+			"default": {
+				"slug": "caret-right",
+				"weight": "regular",
+				"svg": ""
+			}
+		},
+		"size": {
+			"type": "number"
+		},
+		"pagination": {
+			"type": "string",
+			"enum": [
+				"dots",
+				"bars",
+				"segments"
+			],
+			"default": "dots"
+		},
+		"overlayInset": {
+			"type": "number",
+			"default": 0
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [
+			"wide",
+			"full"
+		],
+		"color": {
+			"text": true,
+			"background": false,
+			"link": false
+		},
+		"typography": {
+			"fontSize": true
+		},
+		"spacing": {
+			"margin": true,
+			"padding": true,
+			"blockGap": true
+		},
+		"layout": {
+			"allowSwitching": false,
+			"allowOrientation": false,
+			"allowInheriting": false,
+			"allowVerticalAlignment": true,
+			"default": {
+				"type": "flex",
+				"flexWrap": "nowrap",
+				"justifyContent": "center"
+			}
+		}
+	},
+	"editorScript": "file:./index.js",
+	"render": "file:./render.php"
+}

@@ -1,0 +1,32 @@
+{
+	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
+	"landingPage": "/switchback-demo/",
+	"preferredVersions": {
+		"wp": "latest",
+		"php": "8.3"
+	},
+	"features": {
+		"networking": true
+	},
+	"steps": [
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "switchback-carousel"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "login",
+			"username": "admin",
+			"password": "password"
+		},
+		{
+			"step": "runPHP",
+			"code": "<?php require '/wordpress/wp-load.php'; $registry = WP_Block_Patterns_Registry::get_instance(); $content = ''; foreach ( array( 'feature-cards', 'quote-rotator', 'gallery-strip', 'logo-marquee' ) as $slug ) { $pattern = $registry->get_registered( 'switchback-carousel/' . $slug ); if ( $pattern ) { $content .= '<!-- wp:heading --><h2 class=\"wp-block-heading\">' . esc_html( $pattern['title'] ) . '</h2><!-- /wp:heading -->' . $pattern['content']; } } wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Switchback Carousel demo', 'post_name' => 'switchback-demo', 'post_content' => $content ) );"
+		}
+	]
+}

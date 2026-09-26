@@ -1,0 +1,111 @@
+/**
+ * Front-end behaviour.
+ */
+const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
+const { manualCarousel, queryCarousel } = require( './fixtures' );
+
+let manualPage;
+let queryPage;
+
+test.describe( 'Carousel on the front end', () => {
+	test.beforeAll( async ( { requestUtils } ) => {
+		await requestUtils.deleteAllPosts();
+		await requestUtils.deleteAllPages();
+		for ( const title of [ 'Post A', 'Post B', 'Post C', 'Post D' ] ) {
+			await requestUtils.createPost( { title, status: 'publish' } );
+		}
+		manualPage = await requestUtils.createPage( {
+			title: 'Manual carousel',
+			status: 'publish',
+			content: manualCarousel,
+		} );
+		queryPage = await requestUtils.createPage( {
+			title: 'Query carousel',
+			status: 'publish',
+			content: queryCarousel,
+		} );
+	} );
+
+	test.afterAll( async ( { requestUtils } ) => {
+		await requestUtils.deleteAllPosts();
+		await requestUtils.deleteAllPages();
+	} );
+
+	test( 'mounts, labels slides and navigates with every control', async ( {
+		page,
+	} ) => {
+		const errors = [];
+		page.on( 'pageerror', ( error ) => errors.push( error.message ) );
+
+		await page.goto( manualPage.link );
+		const root = page.locator( '.switchback' );
+		const track = root.locator( '.switchback-track' );
+
+		await expect( track ).toHaveClass( /is-ready/ );
+		await expect(
+			track.locator( '.splide__slide' ).first()
+		).toHaveAttribute( 'aria-label', '1 of 5' );
+
+		const prev = root.getByRole( 'button', { name: 'Previous slide' } );
+		const next = root.getByRole( 'button', { name: 'Next slide' } );
+		const current = root.locator( '.switchback-controls__current' );
+
+		// Two per view, one per move: four positions.
+		await expect( prev ).toBeDisabled();
+		await expect(
+			root.locator( '.switchback-controls__page' )
+		).toHaveCount( 4 );
+		await expect(
+			root.locator( '.switchback-controls__total' )
+		).toHaveText( '4' );
+
+		await next.click();
+		await expect( current ).toHaveText( '2' );
+		await expect( prev ).toBeEnabled();
+
+		await root.locator( '.switchback-controls__page' ).nth( 3 ).click();
+		await expect( current ).toHaveText( '4' );
+		await expect( next ).toBeDisabled();
+
+		await track.focus();
+		await page.keyboard.press( 'ArrowLeft' );
+		await expect( current ).toHaveText( '3' );
+
+		await expect(
+			root.locator( '.switchback-controls__progress' )
+		).toHaveAttribute( 'role', 'slider' );
+		expect( errors ).toEqual( [] );
+	} );
+
+	test( 'query carousels show one slide per post', async ( { page } ) => {
+		await page.goto( queryPage.link );
+		const titles = page.locator(
+			'.switchback-track .splide__slide:not(.splide__slide--clone) .wp-block-post-title'
+		);
+		await expect( titles ).toHaveText( [
+			'Post A',
+			'Post B',
+			'Post C',
+			'Post D',
+		] );
+	} );
+
+	test.describe( 'without JavaScript', () => {
+		test.use( { javaScriptEnabled: false } );
+
+		test( 'slides stay visible as a scrollable row', async ( { page } ) => {
+			await page.goto( manualPage.link );
+			const track = page.locator( '.switchback-track' );
+			await expect( track ).not.toHaveClass( /is-ready/ );
+			await expect( page.getByText( 'Slide One' ) ).toBeVisible();
+			const overflow = await track
+				.locator( '.splide__track' )
+				.evaluate(
+					( el ) =>
+						el.ownerDocument.defaultView.getComputedStyle( el )
+							.overflowX
+				);
+			expect( overflow ).toBe( 'auto' );
+		} );
+	} );
+} );

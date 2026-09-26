@@ -1,0 +1,354 @@
+/**
+ * Switchback Carousel styles (front end and editor), loaded once.
+ *
+ * Structural rules Splide needs are included here rather than Splide's own
+ * stylesheet, which hides carousels until JavaScript runs. Without JS, a
+ * track is a native horizontally scrolling row.
+ */
+
+.switchback {
+	position: relative;
+}
+
+/* Track ------------------------------------------------------------------- */
+
+.switchback-track {
+	--switchback-columns: 3;
+	--switchback-gap: 1.5rem;
+	position: relative;
+
+	.splide__track {
+		position: relative;
+		z-index: 0;
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scrollbar-width: none;
+
+		&::-webkit-scrollbar {
+			display: none;
+		}
+	}
+
+	.splide__list {
+		display: flex;
+		height: 100%;
+		margin: 0 !important;
+		padding: 0 !important;
+		gap: var(--switchback-gap);
+		backface-visibility: hidden;
+	}
+
+	/* Before Splide sizes the slides: columns from the CSS variables. */
+	.splide__list > * {
+		position: relative;
+		flex: 0 0 calc((100% - (var(--switchback-columns) - 1) * var(--switchback-gap)) / var(--switchback-columns));
+		box-sizing: border-box;
+		min-width: 0;
+		max-width: var(--switchback-max-width, none);
+		margin: 0;
+		list-style: none;
+		scroll-snap-align: start;
+	}
+
+	/* Mounted: Splide owns sizing, spacing and position. */
+	&.is-ready {
+
+		.splide__track {
+			overflow: hidden;
+			scroll-snap-type: none;
+		}
+
+		.splide__list {
+			gap: 0;
+		}
+
+		.splide__list > * {
+			flex-basis: auto;
+			flex-shrink: 0;
+			scroll-snap-align: none;
+		}
+	}
+
+	&.has-visible-overflow.is-ready .splide__track {
+		overflow: visible;
+	}
+
+	&.has-faded-edges-both .splide__track {
+		mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+	}
+
+	&.has-faded-edges-end .splide__track {
+		mask-image: linear-gradient(90deg, #000 88%, transparent);
+	}
+
+	&.has-faded-edges-end[dir="rtl"] .splide__track {
+		mask-image: linear-gradient(270deg, #000 88%, transparent);
+	}
+
+	&.has-grab-cursor .splide__track {
+		cursor: grab;
+	}
+
+	&.has-grab-cursor.is-grabbing .splide__track {
+		cursor: grabbing;
+	}
+
+	.splide__track--draggable {
+		user-select: none;
+		-webkit-touch-callout: none;
+	}
+
+	.splide__track--fade > .splide__list > .splide__slide {
+		z-index: 0;
+		margin: 0 !important;
+		opacity: 0;
+	}
+
+	.splide__track--fade > .splide__list > .splide__slide.is-active {
+		z-index: 1;
+		opacity: 1;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 4px;
+	}
+
+	.splide__slide:focus-visible,
+	&:focus-within .splide__slide.is-active:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: -2px;
+	}
+
+	.splide__sr {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		margin: -1px;
+		padding: 0;
+		overflow: hidden;
+		clip-path: inset(50%);
+		border: 0;
+	}
+}
+
+/* Controls ---------------------------------------------------------------- */
+
+.switchback-controls {
+	--switchback-control-size: 32px;
+	align-items: center;
+
+	&.is-inactive {
+		visibility: hidden;
+	}
+
+	/* Icon buttons only: the play/pause control keeps the theme's button style. */
+	button:not(.wp-element-button) {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+		color: inherit;
+		font: inherit;
+		cursor: pointer;
+	}
+}
+
+.switchback-controls__button {
+	display: inline-grid;
+	place-items: center;
+	width: var(--switchback-control-size);
+	height: var(--switchback-control-size);
+	transition: opacity 0.15s ease-out;
+
+	.switchback-icon,
+	.switchback-icon svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+
+	&:hover:not(:disabled) {
+		opacity: 0.65;
+	}
+
+	&:disabled {
+		opacity: 0.25;
+		cursor: default;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 3px;
+		border-radius: 2px;
+	}
+}
+
+/* Glyphs point right. Mirror the direct child only: a custom icon wraps its
+   <svg> in a span, and flipping both would cancel out. */
+.switchback-controls__prev > .switchback-icon {
+	transform: scaleX(-1);
+}
+
+[dir="rtl"] .switchback-controls__prev > .switchback-icon,
+.switchback:has(.switchback-track[dir="rtl"]) .switchback-controls__prev > .switchback-icon {
+	transform: none;
+}
+
+[dir="rtl"] .switchback-controls__next > .switchback-icon,
+.switchback:has(.switchback-track[dir="rtl"]) .switchback-controls__next > .switchback-icon {
+	transform: scaleX(-1);
+}
+
+/* Arrows over the slides, centred on the track (view.js measures it). */
+.switchback.has-overlay-controls > .switchback-controls.is-arrows {
+	position: absolute;
+	top: var(--switchback-track-middle, 50%);
+	right: 0;
+	left: 0;
+	z-index: 2;
+	justify-content: space-between;
+	max-width: none !important;
+	margin: 0 calc(var(--switchback-overlay-inset, 0px) * -1) !important;
+	transform: translateY(-50%);
+	pointer-events: none;
+
+	.switchback-controls__button {
+		pointer-events: auto;
+	}
+}
+
+/* Pagination */
+.switchback-controls__pages {
+	display: flex;
+	flex-wrap: wrap;
+	gap: calc(var(--switchback-control-size) * 0.9);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	li {
+		display: flex;
+		margin: 0;
+	}
+}
+
+.switchback-controls.is-pagination {
+	--switchback-control-size: 8px;
+}
+
+.switchback-controls__page {
+	display: block;
+	width: var(--switchback-control-size);
+	height: var(--switchback-control-size);
+	border-radius: 50%;
+	background: currentcolor !important;
+	opacity: 0.3;
+	transition: opacity 0.15s ease-out, width 0.15s ease-out;
+
+	&.is-active,
+	&:hover {
+		opacity: 1;
+	}
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 3px;
+	}
+}
+
+.is-style-bars .switchback-controls__page {
+	width: calc(var(--switchback-control-size) * 4);
+	border-radius: 999px;
+}
+
+.is-style-bars .switchback-controls__page.is-active {
+	width: calc(var(--switchback-control-size) * 7);
+}
+
+.is-style-segments {
+
+	.switchback-controls__pages {
+		flex: 1;
+		flex-wrap: nowrap;
+		gap: 4px;
+	}
+
+	li {
+		flex: 1;
+	}
+
+	.switchback-controls__page {
+		width: 100%;
+		height: 3px;
+		border-radius: 0;
+	}
+}
+
+/* Progress */
+.switchback-controls.is-progress {
+	--switchback-control-size: 3px;
+}
+
+.switchback-controls__progress {
+	position: relative;
+	flex: 1 1 auto;
+	min-width: 4rem;
+	height: var(--switchback-control-size);
+	border-radius: 999px;
+	background: color-mix(in srgb, currentcolor 18%, transparent);
+	cursor: pointer;
+	touch-action: none;
+
+	&:focus-visible {
+		outline: 2px solid currentcolor;
+		outline-offset: 4px;
+	}
+}
+
+.switchback-controls__progress-bar {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	inset-inline-start: 0;
+	width: 25%;
+	border-radius: inherit;
+	background: currentcolor;
+	transition: inset-inline-start 0.3s ease-out, width 0.3s ease-out;
+}
+
+/* Visually hidden, still read by screen readers. */
+.switchback-sr {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	margin: -1px;
+	padding: 0;
+	overflow: hidden;
+	clip-path: inset(50%);
+	border: 0;
+	white-space: nowrap;
+}
+
+/* Counter */
+.switchback-controls__counter {
+	margin: 0;
+	font-variant-numeric: tabular-nums;
+}
+
+.switchback-controls__divider {
+	opacity: 0.5;
+}
+
+.switchback-controls__playpause[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+	.switchback-controls__button,
+	.switchback-controls__page,
+	.switchback-controls__progress-bar {
+		transition: none;
+	}
+}

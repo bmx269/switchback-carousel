@@ -1,0 +1,9 @@
+node_modules/
+vendor/
+build/
+artifacts/
+*.zip
+.DS_Store
+.claude/
+.wp-env.override.json
+.phpunit.result.cache

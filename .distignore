@@ -1,0 +1,42 @@
+# Development files kept out of the WordPress.org release.
+# .git MUST be listed: the WordPress.org deploy action rsyncs with
+# --exclude-from=.distignore, and skips its own default excludes when this
+# file exists.
+#
+# src/ and package.json ship on purpose: they are the human-readable source
+# of build/ (Plugin Guideline 4).
+/.git
+/.claude
+/.github
+/.wordpress-org
+/node_modules
+/vendor
+/tests
+/scripts
+/artifacts
+.build-tmp
+
+# Config and tooling
+.distignore
+.editorconfig
+.gitattributes
+.gitignore
+.nvmrc
+.wp-env.json
+.wp-env.override.json
+composer.json
+composer.lock
+phpcs.xml.dist
+phpunit.xml.dist
+playwright.config.js
+package-lock.json
+blueprint.json
+deploy.sh
+README.md
+CREDITS.md
+
+# Build artifacts and OS files
+*.zip
+*.log
+.DS_Store
+.phpunit.result.cache

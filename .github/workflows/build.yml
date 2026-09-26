@@ -1,0 +1,55 @@
+name: Build and Lint
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    name: Lint, unit test, build and Plugin Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          composer install --no-interaction --no-progress
+
+      - name: Lint JS
+        run: npm run lint:js
+
+      - name: Lint CSS
+        run: npm run lint:css
+
+      - name: Lint PHP (WordPress Coding Standards)
+        run: npm run lint:php
+
+      - name: JS unit tests
+        run: npm run test:unit
+
+      - name: Build
+        run: npm run build
+
+      - name: Package the plugin as WordPress.org will ship it
+        run: rsync -a --exclude-from=.distignore ./ "$RUNNER_TEMP/switchback-carousel/"
+
+      - name: Plugin Check
+        uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: ${{ runner.temp }}/switchback-carousel

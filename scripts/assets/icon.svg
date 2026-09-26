@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Switchback Carousel">
+	<defs>
+		<linearGradient id="sbc-bg" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#1F5A43"/>
+			<stop offset="1" stop-color="#123326"/>
+		</linearGradient>
+	</defs>
+	<rect width="256" height="256" rx="56" fill="url(#sbc-bg)"/>
+	<!-- Side slides -->
+	<rect x="22" y="72" width="44" height="96" rx="10" fill="#F7EFE2" opacity="0.35"/>
+	<rect x="190" y="72" width="44" height="96" rx="10" fill="#F7EFE2" opacity="0.35"/>
+	<!-- Centre slide with a switchback trail -->
+	<rect x="76" y="52" width="104" height="136" rx="14" fill="#F7EFE2"/>
+	<circle cx="152" cy="80" r="11" fill="#F4B942"/>
+	<path d="M98 168 L150 146 L106 124 L150 102" fill="none" stroke="#E8772E" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+	<!-- Pagination -->
+	<circle cx="106" cy="214" r="7" fill="#F7EFE2" opacity="0.4"/>
+	<rect x="120" y="207" width="28" height="14" rx="7" fill="#E8772E"/>
+	<circle cx="162" cy="214" r="7" fill="#F7EFE2" opacity="0.4"/>
+</svg>
