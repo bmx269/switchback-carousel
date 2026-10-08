@@ -32,6 +32,8 @@ require_once DIR . '/includes/rest.php';
 require_once DIR . '/includes/patterns.php';
 require_once DIR . '/includes/api.php';
 require_once DIR . '/includes/carousel-state.php';
+require_once DIR . '/includes/query-carousel.php';
+require_once DIR . '/includes/token-expansion.php';
 
 Rest::init();
 

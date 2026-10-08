@@ -3,6 +3,8 @@
  */
 import { registerBlockCollection, registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
+
+import '../query-carousel/variation';
 import {
 	InnerBlocks,
 	InspectorControls,
