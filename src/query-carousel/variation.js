@@ -371,6 +371,26 @@ addFilter(
  * as a horizontal carousel. We can't call our render transform here — the Edit
  * component doesn't go through render_block — so we rely on CSS instead.
  */
+/**
+ * Translate the block's `style.spacing.blockGap` into a CSS value usable in the
+ * editor preview. Picks up both preset references and raw lengths; mirrors
+ * horizontal_gap() in includes/support.php.
+ *
+ * @param {Object|string|undefined} gap The blockGap setting (string or {left,top}).
+ * @return {string|undefined} CSS value, or undefined when unset.
+ */
+function gapToCss( gap ) {
+	const value =
+		gap && typeof gap === 'object' ? ( gap.left ?? gap.top ) : gap;
+	if ( typeof value !== 'string' || ! value ) {
+		return undefined;
+	}
+	const preset = 'var:preset|spacing|';
+	return value.startsWith( preset )
+		? `var(--wp--preset--spacing--${ value.slice( preset.length ) })`
+		: value;
+}
+
 const withCarouselPreviewClass = createHigherOrderComponent(
 	( BlockListBlock ) => ( props ) => {
 		if (
@@ -381,6 +401,7 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 		}
 		const sb = props.attributes.switchback;
 		const columns = sb.layout?.desktop?.columns ?? 3;
+		const gap = gapToCss( props.attributes?.style?.spacing?.blockGap );
 		const className = [
 			props.className,
 			'is-switchback-carousel-preview',
@@ -392,6 +413,7 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 			style: {
 				...( props.wrapperProps?.style || {} ),
 				'--switchback-columns': columns,
+				...( gap && { '--switchback-gap': gap } ),
 			},
 		};
 		return (
