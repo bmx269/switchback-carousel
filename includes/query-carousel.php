@@ -27,11 +27,12 @@ const QUERY_NAMESPACE = 'switchback-carousel/query-carousel';
  *
  * @param array $settings The `switchback` attribute on core/query.
  */
-function splide_options_from_settings( array $settings ): array {
+function splide_options_from_settings( array $settings, array $block_attrs = array() ): array {
 	$motion   = (array) ( $settings['motion'] ?? array() );
 	$autoplay = (array) ( $settings['autoplay'] ?? array() );
 	$layout   = (array) ( $settings['layout'] ?? array() );
 	$width    = (array) ( $settings['slideWidth'] ?? array() );
+	$gap      = horizontal_gap( $block_attrs );
 
 	$fade = 'fade' === ( $motion['transition'] ?? 'slide' );
 	$loop = one_of( $motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
@@ -93,6 +94,7 @@ function splide_options_from_settings( array $settings ): array {
 		array(
 			'type'          => $type,
 			'rewind'        => 'rewind' === $loop,
+			'gap'           => '' !== $gap ? $gap : '1.5rem',
 			'focus'         => 'center' === ( $settings['focus'] ?? 'start' ) ? 'center' : 0,
 			'trimSpace'     => 'center' !== ( $settings['focus'] ?? 'start' ),
 			'omitEnd'       => 'slide' === $type,
@@ -132,6 +134,7 @@ function splide_options_from_settings( array $settings ): array {
 	return array(
 		'splide'   => $options,
 		'minWidth' => bounded_int( $width['min'] ?? 0, 0, 800, 0 ),
+		'maxWidth' => bounded_int( $width['max'] ?? 0, 0, 1600, 0 ),
 		'rtl'      => $rtl,
 		'edges'    => array(
 			'overflow' => ! empty( ( (array) ( $settings['edges'] ?? array() ) )['overflow'] ),
@@ -158,13 +161,24 @@ function splide_options_from_settings( array $settings ): array {
  * @param array  $cfg  Config from splide_options_from_settings().
  */
 function wrap_as_track( string $html, array $cfg ): string {
-	// Add `splide__list` to the post-template <ul> and remember where to splice
-	// the <div class="splide__track"> wrappers.
+	// Add `splide__list` to the post-template <ul> and strip the core layout
+	// classes WP adds to it. Those (`is-layout-flow`,
+	// `wp-block-post-template-is-layout-flow`) apply vertical flow styles that
+	// fight Splide's horizontal row — their only job in a non-carousel Query
+	// Loop is spacing between posts, which Splide owns here. Also strip the
+	// per-instance `wp-container-*` class whose inline-style block-gap is
+	// redundant once we take over.
 	$processor = new WP_HTML_Tag_Processor( $html );
 	$found     = false;
 	while ( $processor->next_tag( array( 'tag_name' => 'ul' ) ) ) {
 		if ( false !== strpos( (string) $processor->get_attribute( 'class' ), 'wp-block-post-template' ) ) {
 			$processor->add_class( 'splide__list' );
+			$processor->remove_class( 'is-layout-flow' );
+			$processor->remove_class( 'wp-block-post-template-is-layout-flow' );
+			$ul_classes = (string) $processor->get_attribute( 'class' );
+			if ( preg_match( '/\bwp-container-[a-z0-9-]+\b/', $ul_classes, $m ) ) {
+				$processor->remove_class( $m[0] );
+			}
 			$found = true;
 			break;
 		}
@@ -202,6 +216,14 @@ function wrap_as_track( string $html, array $cfg ): string {
 		foreach ( $classes as $c ) {
 			$processor->add_class( $c );
 		}
+		// Drop core/query's own flow-layout classes so Splide owns the layout.
+		$processor->remove_class( 'is-layout-flow' );
+		$processor->remove_class( 'wp-block-query-is-layout-flow' );
+		$outer_classes = (string) $processor->get_attribute( 'class' );
+		if ( preg_match( '/\bwp-container-[a-z0-9-]+\b/', $outer_classes, $m ) ) {
+			$processor->remove_class( $m[0] );
+		}
+
 		$processor->set_attribute(
 			'data-switchback',
 			(string) wp_json_encode( array( 'splide' => $cfg['splide'], 'minWidth' => $cfg['minWidth'] ) )
@@ -210,6 +232,25 @@ function wrap_as_track( string $html, array $cfg ): string {
 		if ( ! empty( $cfg['rtl'] ) ) {
 			$processor->set_attribute( 'dir', 'rtl' );
 		}
+
+		// Inline CSS variables for pre-mount sizing. style.scss's
+		// `.splide__list > *` uses `--switchback-columns` and
+		// `--switchback-gap` to width slides before Splide takes over, so
+		// the no-JS and pre-hydration view matches the configured desktop
+		// column count. Mirrors track/render.php.
+		$style_vars = array(
+			'--switchback-columns:' . ( $cfg['splide']['perPage'] ?? 1 ),
+		);
+		if ( ! empty( $cfg['splide']['gap'] ) ) {
+			$style_vars[] = '--switchback-gap:' . $cfg['splide']['gap'];
+		}
+		if ( ! empty( $cfg['maxWidth'] ) ) {
+			$style_vars[] = '--switchback-max-width:' . (int) $cfg['maxWidth'] . 'px';
+		}
+		$existing_style = (string) $processor->get_attribute( 'style' );
+		$style_prefix   = '' === trim( $existing_style ) ? '' : rtrim( $existing_style, '; ' ) . ';';
+		$processor->set_attribute( 'style', $style_prefix . implode( ';', $style_vars ) );
+
 		return $processor->get_updated_html();
 	}
 
@@ -227,7 +268,7 @@ add_filter(
 			return $html;
 		}
 		$settings = (array) ( $block['attrs']['switchback'] ?? array() );
-		$config   = splide_options_from_settings( $settings );
+		$config   = splide_options_from_settings( $settings, (array) ( $block['attrs'] ?? array() ) );
 		return wrap_as_track( $html, $config );
 	},
 	10,
