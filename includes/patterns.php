@@ -50,6 +50,41 @@ function design_carousel( array $track, string $slides, string $after, array $at
 }
 
 /**
+ * A Query Loop carousel: core/query with the Switchback variation enabled.
+ *
+ * @param array  $query_attrs   `query` sub-attribute (postType, perPage, etc.).
+ * @param array  $switchback    Carousel display settings (layout, motion, etc.).
+ * @param string $post_template Markup inside <!-- wp:post-template --> (one post).
+ * @param string $after         Controls block markup placed after the query.
+ * @param array  $carousel_attrs Outer carousel wrapper attributes.
+ */
+function design_query_carousel( array $query_attrs, array $switchback, string $post_template, string $after, array $carousel_attrs = array() ): string {
+	$query = array(
+		'namespace' => 'advanced-query-loop',
+		'align'     => 'wide',
+		'query'     => $query_attrs + array(
+			'perPage' => 6,
+			'pages'   => 0,
+			'offset'  => 0,
+			'order'   => 'desc',
+			'orderBy' => 'date',
+			'inherit' => false,
+		),
+		'switchback' => $switchback + array( 'enabled' => true ),
+	);
+	$query_markup = sprintf(
+		'<!-- wp:query %s --><div class="wp-block-query alignwide"><!-- wp:post-template -->%s<!-- /wp:post-template --></div><!-- /wp:query -->',
+		wp_json_encode( $query, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ),
+		$post_template
+	);
+	return design_block(
+		'carousel',
+		$carousel_attrs + array( 'align' => 'wide' ),
+		$query_markup . $after
+	);
+}
+
+/**
  * Register the designs.
  */
 function register_designs(): void {
@@ -137,12 +172,15 @@ function register_designs(): void {
 		),
 	);
 
-	// Latest posts: from the query, arrows over the slides.
+	// Latest posts: from a Query Loop with Switchback display on, arrows over.
 	$designs['latest-posts'] = array(
 		__( 'Latest posts', 'switchback-carousel' ),
-		design_carousel(
+		design_query_carousel(
 			array(
-				'mode'   => 'query',
+				'postType' => 'post',
+				'perPage'  => 6,
+			),
+			array(
 				'layout' => array(
 					'desktop' => array(
 						'columns' => 3,
@@ -160,11 +198,11 @@ function register_designs(): void {
 					),
 				),
 			),
-			design_slide(
-				'<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->'
+			'<!-- wp:group {"layout":{"type":"constrained"}} --><div class="wp-block-group">'
+				. '<!-- wp:post-featured-image {"isLink":true,"aspectRatio":"3/2"} /-->'
 				. '<!-- wp:post-title {"level":3,"isLink":true} /-->'
 				. '<!-- wp:post-date /-->'
-			),
+				. '</div><!-- /wp:group -->',
 			design_block(
 				'controls',
 				array(

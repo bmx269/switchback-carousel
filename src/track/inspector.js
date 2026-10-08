@@ -14,17 +14,8 @@ import {
 } from '@wordpress/components';
 /* eslint-enable @wordpress/no-unsafe-wp-apis */
 
-import QueryPanel from './query-panel';
 import { useDevice } from '../shared/device';
 import { deviceKey, layoutFor } from '../shared/responsive';
-
-const SOURCES = window.switchbackEditor?.sources ?? [
-	{
-		name: 'posts',
-		label: __( 'Posts', 'switchback-carousel' ),
-		controls: null,
-	},
-];
 
 const DEVICES = {
 	desktop: __( 'desktop', 'switchback-carousel' ),
@@ -126,8 +117,6 @@ function LayoutControls( { layout, fade, setLayout } ) {
 
 export default function Inspector( { attributes, setAttributes } ) {
 	const {
-		mode,
-		source,
 		layout,
 		slideWidth,
 		focus,
@@ -138,8 +127,6 @@ export default function Inspector( { attributes, setAttributes } ) {
 		linkedLayout,
 	} = attributes;
 	const fade = 'fade' === motion.transition;
-	const currentSource =
-		SOURCES.find( ( item ) => item.name === source ) ?? SOURCES[ 0 ];
 
 	const merge = ( name ) => ( changes ) =>
 		setAttributes( { [ name ]: { ...attributes[ name ], ...changes } } );
@@ -158,62 +145,19 @@ export default function Inspector( { attributes, setAttributes } ) {
 	return (
 		<InspectorControls>
 			<PanelBody title={ __( 'Slides', 'switchback-carousel' ) }>
-				<Choice
-					label={ __( 'Content', 'switchback-carousel' ) }
-					value={ mode }
-					options={ [
-						[ 'manual', __( 'Hand-built', 'switchback-carousel' ) ],
-						[ 'query', __( 'From posts', 'switchback-carousel' ) ],
-					] }
-					onChange={ ( value ) => setAttributes( { mode: value } ) }
-					help={
-						'query' === mode
-							? __(
-									'One slide per post. The first slide is the design; put post blocks and bound fields in it.',
-									'switchback-carousel'
-								)
-							: undefined
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ __( 'Linked layout', 'switchback-carousel' ) }
+					help={ __(
+						'Rearranging or restyling one slide updates the others. Each keeps its own content.',
+						'switchback-carousel'
+					) }
+					checked={ linkedLayout }
+					onChange={ ( value ) =>
+						setAttributes( { linkedLayout: value } )
 					}
 				/>
-				{ 'query' === mode && SOURCES.length > 1 && (
-					<SelectControl
-						__next40pxDefaultSize
-						__nextHasNoMarginBottom
-						label={ __( 'Get posts from', 'switchback-carousel' ) }
-						value={ currentSource.name }
-						options={ SOURCES.map( ( item ) => ( {
-							value: item.name,
-							label: item.label,
-						} ) ) }
-						onChange={ ( value ) =>
-							setAttributes( { source: value } )
-						}
-						help={ currentSource.description }
-					/>
-				) }
-				{ 'manual' === mode && (
-					<ToggleControl
-						__nextHasNoMarginBottom
-						label={ __( 'Linked layout', 'switchback-carousel' ) }
-						help={ __(
-							'Rearranging or restyling one slide updates the others. Each keeps its own content.',
-							'switchback-carousel'
-						) }
-						checked={ linkedLayout }
-						onChange={ ( value ) =>
-							setAttributes( { linkedLayout: value } )
-						}
-					/>
-				) }
 			</PanelBody>
-
-			{ 'query' === mode && (
-				<QueryPanel
-					attributes={ attributes }
-					setAttributes={ setAttributes }
-					controls={ currentSource.controls }
-				/>
-			) }
 
 			<PanelBody title={ __( 'Layout', 'switchback-carousel' ) }>
 				<LayoutControls

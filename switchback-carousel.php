@@ -26,16 +26,10 @@ const BLOCKS  = array( 'carousel', 'track', 'slide', 'controls' );
 require_once DIR . '/includes/support.php';
 require_once DIR . '/includes/icons.php';
 require_once DIR . '/includes/class-tokens.php';
-require_once DIR . '/includes/class-query-builder.php';
-require_once DIR . '/includes/sources.php';
-require_once DIR . '/includes/rest.php';
 require_once DIR . '/includes/patterns.php';
-require_once DIR . '/includes/api.php';
 require_once DIR . '/includes/carousel-state.php';
 require_once DIR . '/includes/query-carousel.php';
 require_once DIR . '/includes/token-expansion.php';
-
-Rest::init();
 
 add_action(
 	'init',
@@ -46,19 +40,13 @@ add_action(
 	}
 );
 
-/**
- * Editor: the registered sources and the icon library.
- */
 add_action(
 	'enqueue_block_editor_assets',
 	static function (): void {
 		$handle = generate_block_asset_handle( 'switchback-carousel/track', 'editorScript' );
-		wp_add_inline_script(
-			$handle,
-			'window.switchbackEditor = ' . wp_json_encode( array( 'sources' => Sources::for_editor() ) ) . ';',
-			'before'
-		);
-		wp_set_script_translations( $handle, 'switchback-carousel' );
+		if ( wp_script_is( $handle, 'registered' ) ) {
+			wp_set_script_translations( $handle, 'switchback-carousel' );
+		}
 	}
 );
 

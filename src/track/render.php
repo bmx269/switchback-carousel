@@ -1,12 +1,10 @@
 <?php
 /**
- * Carousel track.
+ * Carousel track. Hand-built slides sit side by side; view.js mounts Splide on
+ * the output using the config stored in data-switchback.
  *
- * Manual mode outputs the slides as saved. Query mode renders the first slide
- * once per post, with that post as block context, so post blocks and block
- * bindings inside the slide show each post's data.
- *
- * view.js mounts Splide on the output using the options in data-switchback.
+ * For post-driven carousels, use a `core/query` block with
+ * `switchback.enabled: true` — see includes/query-carousel.php.
  *
  * @package SwitchbackCarousel
  *
@@ -15,10 +13,8 @@
  * @var WP_Block $block      Block.
  */
 
-use SwitchbackCarousel\Sources;
 use function SwitchbackCarousel\bounded_float;
 use function SwitchbackCarousel\bounded_int;
-use function SwitchbackCarousel\enter_query_render;
 use function SwitchbackCarousel\horizontal_gap;
 use function SwitchbackCarousel\one_of;
 
@@ -34,9 +30,6 @@ $switchback_carousel_fade = 'fade' === ( $switchback_carousel_motion['transition
 $switchback_carousel_loop = one_of( $switchback_carousel_motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
 $switchback_carousel_rtl  = 'auto' === ( $attributes['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === $attributes['direction'];
 
-/**
- * Columns / step / peek for one device, with its fallback device.
- */
 $switchback_carousel_device = static function ( array $settings, array $fallback ): array {
 	return array(
 		'columns' => bounded_int( $settings['columns'] ?? null, 1, 8, $fallback['columns'] ),
@@ -63,10 +56,6 @@ $switchback_carousel_mobile  = $switchback_carousel_device(
 	)
 );
 
-/**
- * Splide options for one device. Peek reveals part of the next slide as
- * padding on the trailing edge.
- */
 $switchback_carousel_splide_layout = static function ( array $device ) use ( $switchback_carousel_fade, $switchback_carousel_rtl ): array {
 	if ( $switchback_carousel_fade ) {
 		return array(
@@ -92,7 +81,6 @@ $switchback_carousel_type = 'slide';
 if ( $switchback_carousel_fade ) {
 	$switchback_carousel_type = 'fade';
 } elseif ( 'loop' === $switchback_carousel_loop || ( $switchback_carousel_autoplays && ! $switchback_carousel_interval ) ) {
-	// Continuous scrolling needs an endless track.
 	$switchback_carousel_type = 'loop';
 }
 
@@ -109,7 +97,6 @@ $switchback_carousel_options = array_merge(
 		'drag'          => 'none' === $switchback_carousel_drag ? false : ( 'free' === $switchback_carousel_drag ? 'free' : true ),
 		'snap'          => true,
 		'wheel'         => ! empty( $switchback_carousel_motion['wheel'] ),
-		// Arrow keys move the carousel while focus is inside it.
 		'keyboard'      => 'focused',
 		'direction'     => $switchback_carousel_rtl ? 'rtl' : 'ltr',
 		'arrows'        => false,
@@ -139,48 +126,11 @@ if ( $switchback_carousel_autoplays && ! $switchback_carousel_interval ) {
 	$switchback_carousel_options['drag']       = 'free';
 }
 
-// Settings view.js applies itself (not Splide options).
 $switchback_carousel_config = array(
 	'splide'   => $switchback_carousel_options,
 	'minWidth' => bounded_int( $switchback_carousel_width['min'] ?? 0, 0, 800, 0 ),
 );
 
-// Slides.
-$switchback_carousel_slides = $content;
-if ( 'query' === ( $attributes['mode'] ?? 'manual' ) ) {
-	$switchback_carousel_slides   = '';
-	$switchback_carousel_template = null;
-	foreach ( $block->parsed_block['innerBlocks'] ?? array() as $switchback_carousel_inner ) {
-		if ( 'switchback-carousel/slide' === $switchback_carousel_inner['blockName'] ) {
-			$switchback_carousel_template = $switchback_carousel_inner;
-			break;
-		}
-	}
-
-	if ( $switchback_carousel_template && enter_query_render( true ) ) {
-		$switchback_carousel_context_post = is_singular() ? (int) get_queried_object_id() : 0;
-		$switchback_carousel_posts        = Sources::posts( (string) ( $attributes['source'] ?? 'posts' ), (array) ( $attributes['query'] ?? array() ), $switchback_carousel_context_post, $block );
-
-		global $post;
-		$switchback_carousel_outer_post = $post;
-		foreach ( $switchback_carousel_posts as $switchback_carousel_post ) {
-			$post = $switchback_carousel_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-			setup_postdata( $post );
-			$switchback_carousel_slides .= ( new WP_Block(
-				$switchback_carousel_template,
-				array(
-					'postId'   => $switchback_carousel_post->ID,
-					'postType' => $switchback_carousel_post->post_type,
-				)
-			) )->render();
-		}
-		$post = $switchback_carousel_outer_post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited
-		$post ? setup_postdata( $post ) : wp_reset_postdata();
-	}
-	enter_query_render( false );
-}
-
-// Presentation.
 $switchback_carousel_classes = array( 'switchback-track', 'splide' );
 if ( ! empty( $switchback_carousel_edges['overflow'] ) ) {
 	$switchback_carousel_classes[] = 'has-visible-overflow';
@@ -213,5 +163,5 @@ printf(
 			'data-switchback' => wp_json_encode( $switchback_carousel_config ),
 		)
 	),
-	$switchback_carousel_slides // phpcs:ignore WordPress.Security.EscapeOutput -- rendered blocks.
+	$content // phpcs:ignore WordPress.Security.EscapeOutput -- rendered blocks.
 );

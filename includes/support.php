@@ -81,20 +81,3 @@ function bounded_float( $value, float $lowest, float $highest, float $fallback )
 function one_of( $value, array $allowed ): string {
 	return in_array( $value, $allowed, true ) ? $value : $allowed[0];
 }
-
-/**
- * Guard against a query-mode slide template that contains another query-mode
- * carousel (directly or through a pattern), which would otherwise recurse.
- *
- * @param bool $entering True when a query render starts, false when it ends.
- * @return bool Whether rendering may continue.
- */
-function enter_query_render( bool $entering ): bool {
-	static $active = 0;
-	if ( ! $entering ) {
-		$active = max( 0, $active - 1 );
-		return true;
-	}
-	++$active;
-	return $active <= 2;
-}

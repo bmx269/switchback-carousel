@@ -29,10 +29,7 @@ function find_track( array $parsed_carousel ): ?array {
 
 /**
  * Derive the state controls need to render themselves correctly before JS boots.
- *
- * For manual mode the slide count comes from parsed inner blocks. For query
- * mode it runs Sources::posts, whose result is request-cached and reused when
- * the track block renders.
+ * Reads carousel settings from the inner track block and counts its slides.
  *
  * @param array $parsed_carousel Parsed carousel block.
  * @return array{slideCount:int,perPage:int,perMove:int,loop:string,autoplay:bool} State.
@@ -66,28 +63,10 @@ function derive_state( array $parsed_carousel ): array {
 		$state['perMove']   = min( bounded_int( $desktop['step'] ?? null, 1, 8, 1 ), $state['perPage'] );
 	}
 
-	if ( 'manual' === ( $attrs['mode'] ?? 'manual' ) ) {
-		foreach ( $track['innerBlocks'] ?? array() as $inner ) {
-			if ( 'switchback-carousel/slide' === ( $inner['blockName'] ?? '' ) ) {
-				++$state['slideCount'];
-			}
+	foreach ( $track['innerBlocks'] ?? array() as $inner ) {
+		if ( 'switchback-carousel/slide' === ( $inner['blockName'] ?? '' ) ) {
+			++$state['slideCount'];
 		}
-	} else {
-		// Query mode: Sources::posts is request-cached, so the track render
-		// below hits the same result without a second DB round-trip. Skip if
-		// we're already inside a query render to match track.php's recursion guard.
-		if ( enter_query_render( true ) ) {
-			$context_post       = is_singular() ? (int) get_queried_object_id() : 0;
-			$state['slideCount'] = count(
-				Sources::posts(
-					(string) ( $attrs['source'] ?? 'posts' ),
-					(array) ( $attrs['query'] ?? array() ),
-					$context_post,
-					null
-				)
-			);
-		}
-		enter_query_render( false );
 	}
 
 	return $state;

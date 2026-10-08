@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"title": "Carousel Track",
 	"category": "media",
-	"description": "The moving part of a carousel. Holds hand-built slides, or repeats its first slide for every post a query returns.",
+	"description": "The moving part of a carousel. Holds hand-built slides.",
 	"parent": [
 		"switchback-carousel/carousel"
 	],
@@ -17,42 +17,6 @@
 		"align": {
 			"type": "string",
 			"default": "wide"
-		},
-		"mode": {
-			"type": "string",
-			"enum": [
-				"manual",
-				"query"
-			],
-			"default": "manual"
-		},
-		"source": {
-			"type": "string",
-			"default": "posts"
-		},
-		"query": {
-			"type": "object",
-			"default": {
-				"postType": "post",
-				"limit": 6,
-				"skip": 0,
-				"sort": {
-					"by": "date",
-					"direction": "desc",
-					"field": ""
-				},
-				"terms": {},
-				"authors": [],
-				"keyword": "",
-				"parent": "",
-				"stickies": "include",
-				"excludeCurrentPost": false,
-				"fields": {
-					"match": "all",
-					"rules": []
-				},
-				"relationshipField": ""
-			}
 		},
 		"layout": {
 			"type": "object",

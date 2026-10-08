@@ -1,59 +1,21 @@
 /**
- * Track editor.
- *
- * Manual: slides sit side by side in a scrollable strip.
- * Query: the first slide is the design. It's edited in place with one of the
- * query's posts as block context; the other posts show as previews of the
- * same design. Click a preview to edit the design with that post.
+ * Track editor. Slides sit side by side in a scrollable strip. For
+ * post-driven carousels, insert a core/query block with the Switchback
+ * Carousel variation beside the track block instead.
  */
 import { __ } from '@wordpress/i18n';
-/* eslint-disable @wordpress/no-unsafe-wp-apis -- block previews have no stable API yet; core's Query Loop uses this hook. */
-import {
-	BlockContextProvider,
-	useBlockProps,
-	useInnerBlocksProps,
-	__experimentalUseBlockPreview as useBlockPreview,
-} from '@wordpress/block-editor';
-/* eslint-enable @wordpress/no-unsafe-wp-apis */
-import { Button, Notice, Spinner } from '@wordpress/components';
+import { useBlockProps, useInnerBlocksProps } from '@wordpress/block-editor';
+import { Button } from '@wordpress/components';
 import { cloneBlock, createBlock } from '@wordpress/blocks';
 import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
-import { memo, useEffect, useMemo, useRef, useState } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 import Inspector from './inspector';
-import { usePreview } from './use-preview';
 import { useDevice } from '../shared/device';
 import { layoutFor } from '../shared/responsive';
 import { layoutFingerprint, mirrorLayout } from '../shared/layout-sync';
 
 const SLIDES = [ 'switchback-carousel/slide' ];
-
-/** Starting design for query mode. */
-const starterDesign = () =>
-	createBlock( 'switchback-carousel/slide', {}, [
-		createBlock( 'core/post-featured-image', {
-			isLink: true,
-			aspectRatio: '3/2',
-		} ),
-		createBlock( 'core/post-title', { isLink: true, level: 3 } ),
-		createBlock( 'core/post-excerpt', { excerptLength: 18 } ),
-	] );
-
-/**
- * Whether a slide is still the untouched placeholder a new carousel starts
- * with (one empty paragraph), so it can be swapped for a post design.
- *
- * @param {Object|undefined} slide Slide block.
- * @return {boolean} Placeholder or not.
- */
-function isPlaceholder( slide ) {
-	const inner = slide?.innerBlocks ?? [];
-	return (
-		inner.length === 1 &&
-		'core/paragraph' === inner[ 0 ].name &&
-		! String( inner[ 0 ].attributes.content ?? '' ).trim()
-	);
-}
 
 /**
  * CSS for the block gap attribute.
@@ -72,30 +34,6 @@ function gapStyle( gap ) {
 		? `var(--wp--preset--spacing--${ value.slice( preset.length ) })`
 		: value;
 }
-
-const PostPreview = memo( function PostPreviewCard( { blocks, onEdit } ) {
-	const props = useBlockPreview( {
-		blocks,
-		props: {
-			className: 'switchback-editor__cell switchback-editor__preview',
-		},
-	} );
-	return (
-		<div
-			{ ...props }
-			role="button"
-			tabIndex={ 0 }
-			aria-label={ __(
-				'Edit the slide design with this post',
-				'switchback-carousel'
-			) }
-			onClick={ onEdit }
-			onKeyDown={ ( event ) =>
-				[ 'Enter', ' ' ].includes( event.key ) && onEdit()
-			}
-		/>
-	);
-} );
 
 function AddSlides( { clientId } ) {
 	const { insertBlock } = useDispatch( 'core/block-editor' );
@@ -202,17 +140,7 @@ function useLinkedLayout( clientId, enabled ) {
 
 export default function Edit( props ) {
 	const { attributes, clientId } = props;
-	const {
-		mode,
-		source,
-		query,
-		layout,
-		motion,
-		slideWidth,
-		linkedLayout,
-		style,
-	} = attributes;
-	const isQuery = 'query' === mode;
+	const { layout, motion, slideWidth, linkedLayout, style } = attributes;
 
 	const device = useDevice();
 	const { columns, peek } = layoutFor(
@@ -222,7 +150,7 @@ export default function Edit( props ) {
 	);
 
 	const blockProps = useBlockProps( {
-		className: `switchback-editor is-${ mode }`,
+		className: 'switchback-editor is-manual',
 		style: {
 			'--switchback-columns': columns,
 			'--switchback-peek': `${ peek }%`,
@@ -235,56 +163,14 @@ export default function Edit( props ) {
 		},
 	} );
 
-	useLinkedLayout( clientId, !! linkedLayout && ! isQuery );
-
-	const { design, empty, editedPost } = useSelect(
-		( select ) => {
-			const blocks = select( 'core/block-editor' ).getBlocks( clientId );
-			return {
-				design: blocks[ 0 ],
-				empty: ! blocks.length,
-				editedPost: select( 'core/editor' )?.getCurrentPostId?.() ?? 0,
-			};
-		},
-		[ clientId ]
-	);
-
-	// Query mode needs a design. A fresh carousel's placeholder slide is
-	// swapped for a starter design; real slides are kept (the first one
-	// becomes the design, the rest come back when switching to hand-built).
-	const { replaceInnerBlocks, replaceBlock } =
-		useDispatch( 'core/block-editor' );
-	useEffect( () => {
-		if ( ! isQuery ) {
-			return;
-		}
-		if ( empty ) {
-			replaceInnerBlocks( clientId, [ starterDesign() ], false );
-		} else if ( isPlaceholder( design ) ) {
-			replaceBlock( design.clientId, starterDesign() );
-		}
-	}, [ isQuery, empty ] ); // eslint-disable-line react-hooks/exhaustive-deps
-
-	const { posts, loading } = usePreview( isQuery, source, query, editedPost );
-	const [ chosen, choose ] = useState( 0 );
-	const active = Math.min( chosen, Math.max( 0, posts.length - 1 ) );
-	const designBlocks = useMemo(
-		() => ( design ? [ design ] : [] ),
-		[ design ]
-	);
+	useLinkedLayout( clientId, !! linkedLayout );
 
 	const innerBlocksProps = useInnerBlocksProps(
-		{
-			className: isQuery
-				? 'switchback-editor__cell switchback-editor__design'
-				: 'switchback-editor__strip',
-		},
+		{ className: 'switchback-editor__strip' },
 		{
 			allowedBlocks: SLIDES,
 			orientation: 'horizontal',
-			renderAppender: isQuery
-				? false
-				: () => <AddSlides clientId={ clientId } />,
+			renderAppender: () => <AddSlides clientId={ clientId } />,
 		}
 	);
 
@@ -292,57 +178,7 @@ export default function Edit( props ) {
 		<>
 			<Inspector { ...props } />
 			<div { ...blockProps }>
-				{ ! isQuery && <div { ...innerBlocksProps } /> }
-				{ isQuery && (
-					<>
-						{ loading && ! posts.length && (
-							<div className="switchback-editor__status">
-								<Spinner />
-							</div>
-						) }
-						{ ! loading && ! posts.length && (
-							<Notice status="warning" isDismissible={ false }>
-								{ __(
-									'Nothing matches this query yet. The slide below is the design each post will use.',
-									'switchback-carousel'
-								) }
-							</Notice>
-						) }
-						<div className="switchback-editor__strip">
-							{ ( posts.length ? posts : [ null ] ).map(
-								( post, index ) =>
-									index === active ? (
-										<BlockContextProvider
-											key="design"
-											value={
-												post
-													? {
-															postId: post.id,
-															postType: post.type,
-														}
-													: {}
-											}
-										>
-											<div { ...innerBlocksProps } />
-										</BlockContextProvider>
-									) : (
-										<BlockContextProvider
-											key={ post.id }
-											value={ {
-												postId: post.id,
-												postType: post.type,
-											} }
-										>
-											<PostPreview
-												blocks={ designBlocks }
-												onEdit={ () => choose( index ) }
-											/>
-										</BlockContextProvider>
-									)
-							) }
-						</div>
-					</>
-				) }
+				<div { ...innerBlocksProps } />
 			</div>
 		</>
 	);
