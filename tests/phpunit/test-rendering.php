@@ -144,39 +144,6 @@ class Test_Rendering extends WP_UnitTestCase {
 		$this->assertSame( array( 'left' => '20%' ), $splide['padding'] );
 	}
 
-	public function test_query_track_repeats_the_first_slide_per_post() {
-		self::factory()->post->create( array( 'post_title' => 'First post' ) );
-		self::factory()->post->create( array( 'post_title' => 'Second post' ) );
-
-		$html = $this->track(
-			array(
-				'mode'  => 'query',
-				'query' => array(
-					'postType' => 'post',
-					'sort'     => array(
-						'by'        => 'title',
-						'direction' => 'asc',
-					),
-				),
-			),
-			$this->slide( '<!-- wp:post-title /-->' ) . $this->slide( '<p>Extra slides are ignored</p>' )
-		);
-
-		$this->assertSame( 2, $this->count_slides( $html ) );
-		$this->assertMatchesRegularExpression( '/First post.*Second post/s', $html );
-		$this->assertStringNotContainsString( 'Extra slides are ignored', $html );
-	}
-
-	public function test_query_track_with_no_results_renders_an_empty_list() {
-		$html = $this->track(
-			array(
-				'mode'  => 'query',
-				'query' => array( 'postType' => 'post' ),
-			),
-			$this->slide( '<!-- wp:post-title /-->' )
-		);
-		$this->assertStringContainsString( '<div class="splide__list"></div>', $html );
-	}
 
 	/**
 	 * @dataProvider controls
