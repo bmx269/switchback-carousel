@@ -22,6 +22,7 @@ import { __ } from '@wordpress/i18n';
 export const QUERY_NAMESPACE = 'switchback-carousel/query-carousel';
 
 const DEFAULT_SWITCHBACK = {
+	enabled: false,
 	layout: {
 		desktop: { columns: 3, step: 1, peek: 0 },
 		tablet: {},
@@ -86,9 +87,16 @@ registerBlockVariation( 'core/query', {
 	),
 	category: 'media',
 	keywords: [ 'carousel', 'slider', 'posts', 'query' ],
-	isActive: ( { namespace } ) => namespace === QUERY_NAMESPACE,
+	// Match either our namespace (classic activation) or any Query Loop that
+	// has opted into carousel display via the `switchback.enabled` flag.
+	// Second form lets Advanced Query Loop and Switchback coexist on one
+	// block: AQL claims `namespace: "advanced-query-loop"`, we claim the
+	// `switchback` attribute.
+	isActive: ( { namespace, switchback } ) =>
+		namespace === QUERY_NAMESPACE || !! switchback?.enabled,
 	attributes: {
 		namespace: QUERY_NAMESPACE,
+		switchback: { ...DEFAULT_SWITCHBACK, enabled: true },
 		query: {
 			perPage: 6,
 			pages: 0,
@@ -102,7 +110,6 @@ registerBlockVariation( 'core/query', {
 			sticky: '',
 			inherit: false,
 		},
-		switchback: DEFAULT_SWITCHBACK,
 	},
 	innerBlocks: [
 		[
@@ -147,6 +154,18 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 			<PanelBody
 				title={ __( 'Carousel display', 'switchback-carousel' ) }
 			>
+				<ToggleControl
+					label={ __(
+						'Display as carousel',
+						'switchback-carousel'
+					) }
+					help={ __(
+						'Render this Query Loop as a Switchback carousel. Works alongside Advanced Query Loop.',
+						'switchback-carousel'
+					) }
+					checked={ !! sb.enabled }
+					onChange={ ( enabled ) => set( [ 'enabled' ], enabled ) }
+				/>
 				<RangeControl
 					label={ __( 'Columns (desktop)', 'switchback-carousel' ) }
 					min={ 1 }
@@ -329,10 +348,7 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 
 const withCarouselInspector = createHigherOrderComponent( ( BlockEdit ) => {
 	return ( props ) => {
-		if (
-			props.name !== 'core/query' ||
-			props.attributes?.namespace !== QUERY_NAMESPACE
-		) {
+		if ( props.name !== 'core/query' ) {
 			return <BlockEdit { ...props } />;
 		}
 		return (

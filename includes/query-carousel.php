@@ -22,6 +22,25 @@ defined( 'ABSPATH' ) || exit;
 const QUERY_NAMESPACE = 'switchback-carousel/query-carousel';
 
 /**
+ * Whether a core/query block has opted into carousel display. We activate on
+ * the `switchback.enabled` flag rather than the block's `namespace`, so a
+ * single Query Loop can be an Advanced Query Loop block (namespace =
+ * advanced-query-loop) *and* a Switchback carousel at once.
+ *
+ * The legacy namespace check stays as a fallback for blocks authored before
+ * we moved to the flag — they'll keep rendering as carousels.
+ *
+ * @param array $attrs core/query block attributes.
+ */
+function carousel_display_enabled( array $attrs ): bool {
+	$settings = (array) ( $attrs['switchback'] ?? array() );
+	if ( ! empty( $settings['enabled'] ) ) {
+		return true;
+	}
+	return QUERY_NAMESPACE === ( $attrs['namespace'] ?? '' );
+}
+
+/**
  * Translate carousel settings into Splide options. Mirrors track/render.php's
  * logic so the two render paths produce identical runtime behaviour.
  *
@@ -264,11 +283,12 @@ function wrap_as_track( string $html, array $cfg ): string {
 add_filter(
 	'render_block_core/query',
 	static function ( string $html, array $block ): string {
-		if ( QUERY_NAMESPACE !== ( $block['attrs']['namespace'] ?? '' ) ) {
+		$attrs = (array) ( $block['attrs'] ?? array() );
+		if ( ! carousel_display_enabled( $attrs ) ) {
 			return $html;
 		}
-		$settings = (array) ( $block['attrs']['switchback'] ?? array() );
-		$config   = splide_options_from_settings( $settings, (array) ( $block['attrs'] ?? array() ) );
+		$settings = (array) ( $attrs['switchback'] ?? array() );
+		$config   = splide_options_from_settings( $settings, $attrs );
 		return wrap_as_track( $html, $config );
 	},
 	10,
