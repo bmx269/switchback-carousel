@@ -11,7 +11,12 @@
 	],
 	"textdomain": "switchback-carousel",
 	"usesContext": [
-		"switchback-carousel/overlayControls"
+		"switchback-carousel/overlayControls",
+		"switchback-carousel/slideCount",
+		"switchback-carousel/perPage",
+		"switchback-carousel/perMove",
+		"switchback-carousel/loop",
+		"switchback-carousel/autoplay"
 	],
 	"attributes": {
 		"align": {
@@ -53,6 +58,13 @@
 			"type": "number",
 			"default": 0
 		}
+	},
+	"example": {
+		"attributes": {
+			"align": "",
+			"control": "arrows"
+		},
+		"viewportWidth": 400
 	},
 	"supports": {
 		"html": false,

@@ -115,7 +115,20 @@ final class Sources {
 	}
 
 	/**
+	 * Request-scoped cache of query results so carousel-state's slide count and
+	 * the track's render share a single WP_Query per carousel.
+	 *
+	 * @var array<string, \WP_Post[]>
+	 */
+	private static array $post_cache = array();
+
+	/**
 	 * Posts for a query-mode track.
+	 *
+	 * Memoised per request on source + query + context_post. The $block argument
+	 * only reaches third-party `switchback_carousel_query_args` filter callbacks;
+	 * two WP_Block instances for the same parsed data produce the same results,
+	 * so caching across them is safe.
 	 *
 	 * @param string        $source       Source name.
 	 * @param array         $query        Query attribute.
@@ -126,9 +139,14 @@ final class Sources {
 	public static function posts( string $source, array $query, int $context_post, ?WP_Block $block ): array {
 		$definition = self::get( $source );
 		$query      = Query_Builder::normalize( $query );
-		$args       = call_user_func( $definition['callback'], $query, $context_post, $block );
+		$cache_key  = md5( $definition['name'] . '|' . wp_json_encode( $query ) . '|' . $context_post );
+		if ( isset( self::$post_cache[ $cache_key ] ) ) {
+			return self::$post_cache[ $cache_key ];
+		}
+
+		$args = call_user_func( $definition['callback'], $query, $context_post, $block );
 		if ( ! is_array( $args ) ) {
-			return array();
+			return self::$post_cache[ $cache_key ] = array();
 		}
 
 		/**
@@ -144,7 +162,7 @@ final class Sources {
 		$args['no_found_rows'] = true;
 		unset( $args['fields'] );
 
-		return ( new \WP_Query( $args ) )->posts;
+		return self::$post_cache[ $cache_key ] = ( new \WP_Query( $args ) )->posts;
 	}
 
 	/**

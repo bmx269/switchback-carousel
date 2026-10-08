@@ -31,6 +31,7 @@ require_once DIR . '/includes/sources.php';
 require_once DIR . '/includes/rest.php';
 require_once DIR . '/includes/patterns.php';
 require_once DIR . '/includes/api.php';
+require_once DIR . '/includes/carousel-state.php';
 
 Rest::init();
 

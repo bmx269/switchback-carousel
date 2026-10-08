@@ -14,6 +14,42 @@
 		"postId",
 		"postType"
 	],
+	"example": {
+		"viewportWidth": 400,
+		"attributes": {
+			"style": {
+				"color": {
+					"background": "#f3efe6"
+				},
+				"spacing": {
+					"padding": {
+						"top": "24px",
+						"right": "24px",
+						"bottom": "24px",
+						"left": "24px"
+					}
+				},
+				"border": {
+					"radius": "12px"
+				}
+			}
+		},
+		"innerBlocks": [
+			{
+				"name": "core/heading",
+				"attributes": {
+					"level": 3,
+					"content": "A slide"
+				}
+			},
+			{
+				"name": "core/paragraph",
+				"attributes": {
+					"content": "Build it from any blocks."
+				}
+			}
+		]
+	},
 	"supports": {
 		"html": false,
 		"reusable": false,

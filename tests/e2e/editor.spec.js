@@ -50,6 +50,20 @@ test.describe( 'Carousel in the editor', () => {
 		);
 	} );
 
+	test( 'blocks are grouped under a Switchback Carousel collection', async ( {
+		admin,
+		page,
+	} ) => {
+		await admin.createNewPost();
+		const collection = await page.evaluate(
+			() =>
+				window.wp.data.select( 'core/blocks' ).getCollections()[
+					'switchback-carousel'
+				]?.title
+		);
+		expect( collection ).toBe( 'Switchback Carousel' );
+	} );
+
 	test( 'track and controls line up wide, and controls lay out as a row', async ( {
 		admin,
 		editor,

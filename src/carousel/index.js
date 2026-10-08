@@ -1,7 +1,7 @@
 /**
  * Carousel: wraps the track plus any controls or other blocks.
  */
-import { registerBlockType } from '@wordpress/blocks';
+import { registerBlockCollection, registerBlockType } from '@wordpress/blocks';
 import { __ } from '@wordpress/i18n';
 import {
 	InnerBlocks,
@@ -80,25 +80,33 @@ function Edit( { attributes: { overlayControls, layout }, setAttributes } ) {
 	);
 }
 
+const icon = (
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 24 24"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<path d="M8 3.5h8A1.5 1.5 0 0 1 17.5 5v14a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 19V5A1.5 1.5 0 0 1 8 3.5ZM8 5v14h8V5H8ZM2.5 7H5v10H2.5V7ZM19 7h2.5v10H19V7Z" />
+		<path
+			d="m9.5 16.5 5-2-4-2 4-2"
+			fill="none"
+			stroke="currentColor"
+			strokeWidth="1.5"
+			strokeLinecap="round"
+			strokeLinejoin="round"
+		/>
+	</svg>
+);
+
+// Groups every switchback-carousel/* block under one heading in the inserter.
+registerBlockCollection( 'switchback-carousel', {
+	title: __( 'Switchback Carousel', 'switchback-carousel' ),
+	icon,
+} );
+
 registerBlockType( metadata.name, {
-	icon: (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 24 24"
-			aria-hidden="true"
-			focusable="false"
-		>
-			<path d="M8 3.5h8A1.5 1.5 0 0 1 17.5 5v14a1.5 1.5 0 0 1-1.5 1.5H8A1.5 1.5 0 0 1 6.5 19V5A1.5 1.5 0 0 1 8 3.5ZM8 5v14h8V5H8ZM2.5 7H5v10H2.5V7ZM19 7h2.5v10H19V7Z" />
-			<path
-				d="m9.5 16.5 5-2-4-2 4-2"
-				fill="none"
-				stroke="currentColor"
-				strokeWidth="1.5"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-			/>
-		</svg>
-	),
+	icon,
 	edit: Edit,
 	save: () => <InnerBlocks.Content />,
 } );

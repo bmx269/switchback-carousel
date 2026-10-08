@@ -3,7 +3,7 @@
 	"apiVersion": 3,
 	"name": "switchback-carousel/carousel",
 	"version": "1.0.0",
-	"title": "Carousel",
+	"title": "Switchback Carousel",
 	"category": "media",
 	"description": "A slider of hand-built slides or slides generated from posts. Put controls, headings and other blocks anywhere around the slides.",
 	"keywords": [
@@ -22,10 +22,170 @@
 		"overlayControls": {
 			"type": "boolean",
 			"default": false
+		},
+		"slideCount": {
+			"type": "number",
+			"default": 0
+		},
+		"perPage": {
+			"type": "number",
+			"default": 1
+		},
+		"perMove": {
+			"type": "number",
+			"default": 1
+		},
+		"loop": {
+			"type": "string",
+			"default": "none"
+		},
+		"autoplay": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"providesContext": {
-		"switchback-carousel/overlayControls": "overlayControls"
+		"switchback-carousel/overlayControls": "overlayControls",
+		"switchback-carousel/slideCount": "slideCount",
+		"switchback-carousel/perPage": "perPage",
+		"switchback-carousel/perMove": "perMove",
+		"switchback-carousel/loop": "loop",
+		"switchback-carousel/autoplay": "autoplay"
+	},
+	"example": {
+		"attributes": {
+			"align": ""
+		},
+		"viewportWidth": 720,
+		"innerBlocks": [
+			{
+				"name": "switchback-carousel/track",
+				"attributes": {
+					"align": ""
+				},
+				"innerBlocks": [
+					{
+						"name": "switchback-carousel/slide",
+						"attributes": {
+							"style": {
+								"color": {
+									"background": "#f3efe6"
+								},
+								"spacing": {
+									"padding": {
+										"top": "24px",
+										"right": "24px",
+										"bottom": "24px",
+										"left": "24px"
+									}
+								},
+								"border": {
+									"radius": "12px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "core/heading",
+								"attributes": {
+									"level": 3,
+									"content": "Pick a route"
+								}
+							},
+							{
+								"name": "core/paragraph",
+								"attributes": {
+									"content": "Slides hold any blocks you like."
+								}
+							}
+						]
+					},
+					{
+						"name": "switchback-carousel/slide",
+						"attributes": {
+							"style": {
+								"color": {
+									"background": "#e6efe9"
+								},
+								"spacing": {
+									"padding": {
+										"top": "24px",
+										"right": "24px",
+										"bottom": "24px",
+										"left": "24px"
+									}
+								},
+								"border": {
+									"radius": "12px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "core/heading",
+								"attributes": {
+									"level": 3,
+									"content": "Check the weather"
+								}
+							},
+							{
+								"name": "core/paragraph",
+								"attributes": {
+									"content": "Or show one slide per post."
+								}
+							}
+						]
+					},
+					{
+						"name": "switchback-carousel/slide",
+						"attributes": {
+							"style": {
+								"color": {
+									"background": "#f7e6da"
+								},
+								"spacing": {
+									"padding": {
+										"top": "24px",
+										"right": "24px",
+										"bottom": "24px",
+										"left": "24px"
+									}
+								},
+								"border": {
+									"radius": "12px"
+								}
+							}
+						},
+						"innerBlocks": [
+							{
+								"name": "core/heading",
+								"attributes": {
+									"level": 3,
+									"content": "Pack light"
+								}
+							},
+							{
+								"name": "core/paragraph",
+								"attributes": {
+									"content": "Controls go anywhere inside."
+								}
+							}
+						]
+					}
+				]
+			},
+			{
+				"name": "switchback-carousel/controls",
+				"attributes": {
+					"align": "",
+					"control": "arrows",
+					"layout": {
+						"type": "flex",
+						"justifyContent": "right"
+					}
+				}
+			}
+		]
 	},
 	"supports": {
 		"align": [

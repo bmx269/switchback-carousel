@@ -12,7 +12,7 @@ Carousel blocks with hand-built slides or one slide per post, filtered by terms 
 
 == Description ==
 
-Switchback Carousel adds a **Carousel** block built from parts you arrange freely in the editor: the **track** that moves, the **slides**, and **controls** — previous/next arrows, pagination, a progress bar, a slide counter or a play/pause button — that can sit anywhere inside the carousel, even inside a slide.
+This plugin adds a **Switchback Carousel** block, built from parts you arrange freely in the editor: the **track** that moves, the **slides**, and **controls** — previous/next arrows, pagination, a progress bar, a slide counter or a play/pause button — that can sit anywhere inside the carousel, even inside a slide.
 
 **[Try it in WordPress Playground](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/bmx269/switchback-carousel/main/blueprint.json)** — no installation needed.
 
@@ -59,7 +59,7 @@ The full, human-readable source of the editor and front-end scripts is included 
 == Installation ==
 
 1. In your dashboard go to **Plugins → Add New**, search for "Switchback Carousel", then install and activate it. Or upload the plugin folder to `/wp-content/plugins/` and activate it on the Plugins screen.
-2. In the editor, add a **Carousel** block, or pick one of the carousel designs from the pattern inserter.
+2. In the editor, add a **Switchback Carousel** block, or pick one of the carousel designs from the pattern inserter.
 3. Select the **Carousel Track** to choose hand-built slides or slides from posts, and to set layout, motion and autoplay.
 
 == Frequently Asked Questions ==
@@ -78,7 +78,7 @@ Yes. Choose **Get posts from → Relationship field** and pick the field. The ca
 
 = Where do the arrows and dots go? =
 
-Anywhere inside the carousel. Controls are their own block, so you can place them above or below the slides, add several, or put them inside a slide. Turn on **Arrows over the slides** on the Carousel block to float the arrows on either side.
+Anywhere inside the carousel. Controls are their own block, so you can place them above or below the slides, add several, or put them inside a slide. Turn on **Arrows over the slides** on the Switchback Carousel block to float the arrows on either side.
 
 = Does it work without JavaScript? =
 
