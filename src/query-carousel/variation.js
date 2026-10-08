@@ -69,6 +69,16 @@ addFilter(
 					default: DEFAULT_SWITCHBACK,
 				},
 			},
+			// core/query ships without a blockGap control. Carousels need it
+			// to let authors change the horizontal gap between slides, and
+			// our server-side render reads it already via horizontal_gap().
+			supports: {
+				...( settings.supports || {} ),
+				spacing: {
+					...( settings.supports?.spacing || {} ),
+					blockGap: true,
+				},
+			},
 		};
 	}
 );
