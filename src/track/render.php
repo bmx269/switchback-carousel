@@ -145,6 +145,9 @@ if ( ! empty( $switchback_carousel_motion['grabCursor'] ) ) {
 
 $switchback_carousel_styles = array(
 	'--switchback-columns:' . $switchback_carousel_desktop['columns'],
+	'--switchback-columns-desktop:' . $switchback_carousel_desktop['columns'],
+	'--switchback-columns-tablet:' . $switchback_carousel_tablet['columns'],
+	'--switchback-columns-mobile:' . $switchback_carousel_mobile['columns'],
 	'--switchback-gap:' . $switchback_carousel_options['gap'],
 );
 $switchback_carousel_max    = bounded_int( $switchback_carousel_width['max'] ?? 0, 0, 1600, 0 );

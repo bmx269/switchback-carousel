@@ -103,6 +103,27 @@
  */
 .is-switchback-carousel-preview {
 	--switchback-gap: 1.5rem;
+	--switchback-columns-active: var(
+		--switchback-columns-desktop,
+		var(--switchback-columns, 3)
+	);
+
+	@media (max-width: 781px) {
+		--switchback-columns-active: var(
+			--switchback-columns-tablet,
+			var(--switchback-columns-desktop, var(--switchback-columns, 2))
+		);
+	}
+
+	@media (max-width: 480px) {
+		--switchback-columns-active: var(
+			--switchback-columns-mobile,
+			var(
+				--switchback-columns-tablet,
+				var(--switchback-columns-desktop, 1)
+			)
+		);
+	}
 
 	.wp-block-post-template {
 		display: flex;
@@ -117,8 +138,8 @@
 	.wp-block-post-template > .wp-block-post {
 		box-sizing: border-box;
 		flex: 0 0 calc(
-			(100% - (var(--switchback-columns, 3) - 1) * var(--switchback-gap)) /
-				var(--switchback-columns, 3)
+			(100% - (var(--switchback-columns-active) - 1) * var(--switchback-gap)) /
+				var(--switchback-columns-active)
 		);
 		min-width: 0;
 		margin: 0;

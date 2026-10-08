@@ -410,7 +410,9 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 			return <BlockListBlock { ...props } />;
 		}
 		const sb = props.attributes.switchback;
-		const columns = sb.layout?.desktop?.columns ?? 3;
+		const desktop = sb.layout?.desktop?.columns ?? 3;
+		const tablet = sb.layout?.tablet?.columns ?? desktop;
+		const mobile = sb.layout?.mobile?.columns ?? 1;
 		const gap = gapToCss( props.attributes?.style?.spacing?.blockGap );
 		const className = [
 			props.className,
@@ -422,7 +424,10 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 			...( props.wrapperProps || {} ),
 			style: {
 				...( props.wrapperProps?.style || {} ),
-				'--switchback-columns': columns,
+				'--switchback-columns': desktop,
+				'--switchback-columns-desktop': desktop,
+				'--switchback-columns-tablet': tablet,
+				'--switchback-columns-mobile': mobile,
 				...( gap && { '--switchback-gap': gap } ),
 			},
 		};

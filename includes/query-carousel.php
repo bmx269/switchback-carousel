@@ -151,10 +151,15 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 	}
 
 	return array(
-		'splide'   => $options,
-		'minWidth' => bounded_int( $width['min'] ?? 0, 0, 800, 0 ),
-		'maxWidth' => bounded_int( $width['max'] ?? 0, 0, 1600, 0 ),
-		'rtl'      => $rtl,
+		'splide'           => $options,
+		'minWidth'         => bounded_int( $width['min'] ?? 0, 0, 800, 0 ),
+		'maxWidth'         => bounded_int( $width['max'] ?? 0, 0, 1600, 0 ),
+		'perDeviceColumns' => array(
+			'desktop' => $desktop['columns'],
+			'tablet'  => $tablet['columns'],
+			'mobile'  => $mobile['columns'],
+		),
+		'rtl'              => $rtl,
 		'edges'    => array(
 			'overflow' => ! empty( ( (array) ( $settings['edges'] ?? array() ) )['overflow'] ),
 			'fade'     => one_of( ( (array) ( $settings['edges'] ?? array() ) )['fade'] ?? 'none', array( 'none', 'both', 'end' ) ),
@@ -253,12 +258,15 @@ function wrap_as_track( string $html, array $cfg ): string {
 		}
 
 		// Inline CSS variables for pre-mount sizing. style.scss's
-		// `.splide__list > *` uses `--switchback-columns` and
-		// `--switchback-gap` to width slides before Splide takes over, so
-		// the no-JS and pre-hydration view matches the configured desktop
-		// column count. Mirrors track/render.php.
+		// `.splide__list > *` uses `--switchback-columns-active` (which
+		// resolves to the desktop/tablet/mobile value at each media query)
+		// and `--switchback-gap` to width slides before Splide takes over,
+		// so the no-JS and pre-hydration views are responsive on their own.
 		$style_vars = array(
 			'--switchback-columns:' . ( $cfg['splide']['perPage'] ?? 1 ),
+			'--switchback-columns-desktop:' . ( $cfg['perDeviceColumns']['desktop'] ?? ( $cfg['splide']['perPage'] ?? 1 ) ),
+			'--switchback-columns-tablet:' . ( $cfg['perDeviceColumns']['tablet'] ?? ( $cfg['perDeviceColumns']['desktop'] ?? ( $cfg['splide']['perPage'] ?? 1 ) ) ),
+			'--switchback-columns-mobile:' . ( $cfg['perDeviceColumns']['mobile'] ?? 1 ),
 		);
 		if ( ! empty( $cfg['splide']['gap'] ) ) {
 			$style_vars[] = '--switchback-gap:' . $cfg['splide']['gap'];

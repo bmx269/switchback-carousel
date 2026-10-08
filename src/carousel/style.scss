@@ -14,8 +14,20 @@
 
 .switchback-track {
 	--switchback-columns: 3;
+	--switchback-columns-desktop: var(--switchback-columns);
+	--switchback-columns-tablet: var(--switchback-columns-desktop);
+	--switchback-columns-mobile: 1;
+	--switchback-columns-active: var(--switchback-columns-desktop);
 	--switchback-gap: 1.5rem;
 	position: relative;
+
+	@media (max-width: 781px) {
+		--switchback-columns-active: var(--switchback-columns-tablet);
+	}
+
+	@media (max-width: 480px) {
+		--switchback-columns-active: var(--switchback-columns-mobile);
+	}
 
 	.splide__track {
 		position: relative;
@@ -38,10 +50,11 @@
 		backface-visibility: hidden;
 	}
 
-	/* Before Splide sizes the slides: columns from the CSS variables. */
+	/* Before Splide sizes the slides: columns from the CSS variables, which
+	 * flip per breakpoint via the media queries above. */
 	.splide__list > * {
 		position: relative;
-		flex: 0 0 calc((100% - (var(--switchback-columns) - 1) * var(--switchback-gap)) / var(--switchback-columns));
+		flex: 0 0 calc((100% - (var(--switchback-columns-active) - 1) * var(--switchback-gap)) / var(--switchback-columns-active));
 		box-sizing: border-box;
 		min-width: 0;
 		max-width: var(--switchback-max-width, none);
