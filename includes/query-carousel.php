@@ -109,14 +109,16 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		$type = 'loop';
 	}
 
-	// Fluid mode: let fitMinimumWidth cap perPage based on the minimum slide
-	// width at mount and on resize. The high upper bound gives it room to
-	// place as many slides as actually fit.
+	// Fluid mode: Splide reads each slide's rendered width (set by CSS from
+	// --switchback-min-width) instead of partitioning the track into perPage
+	// equal slots. That keeps drag, arrows and pagination accurate without
+	// needing to patch perPage on resize.
 	$desktop_options = $fluid
 		? array(
-			'perPage' => 12,
-			'perMove' => 1,
-			'padding' => 0,
+			'autoWidth' => true,
+			'perPage'   => 1,
+			'perMove'   => 1,
+			'padding'   => 0,
 		)
 		: $per_device( $desktop );
 
