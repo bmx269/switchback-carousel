@@ -365,3 +365,48 @@ addFilter(
 	'switchback-carousel/query-inspector',
 	withCarouselInspector
 );
+
+/**
+ * Mark enabled Query Loops in the editor so stylesheets can lay out the preview
+ * as a horizontal carousel. We can't call our render transform here — the Edit
+ * component doesn't go through render_block — so we rely on CSS instead.
+ */
+const withCarouselPreviewClass = createHigherOrderComponent(
+	( BlockListBlock ) => ( props ) => {
+		if (
+			props.name !== 'core/query' ||
+			! props.attributes?.switchback?.enabled
+		) {
+			return <BlockListBlock { ...props } />;
+		}
+		const sb = props.attributes.switchback;
+		const columns = sb.layout?.desktop?.columns ?? 3;
+		const className = [
+			props.className,
+			'is-switchback-carousel-preview',
+		]
+			.filter( Boolean )
+			.join( ' ' );
+		const wrapperProps = {
+			...( props.wrapperProps || {} ),
+			style: {
+				...( props.wrapperProps?.style || {} ),
+				'--switchback-columns': columns,
+			},
+		};
+		return (
+			<BlockListBlock
+				{ ...props }
+				className={ className }
+				wrapperProps={ wrapperProps }
+			/>
+		);
+	},
+	'withCarouselPreviewClass'
+);
+
+addFilter(
+	'editor.BlockListBlock',
+	'switchback-carousel/query-preview-class',
+	withCarouselPreviewClass
+);

@@ -94,3 +94,34 @@
 	border: 1px solid #e0e0e0;
 	border-radius: 4px;
 }
+
+/**
+ * Editor preview for the Query Loop carousel variation. The server-side
+ * render transform doesn't run in the editor, so lay out core/post-template's
+ * <ul> as a horizontal flex row with the configured column count — matching
+ * the pre-mount front-end view.
+ */
+.is-switchback-carousel-preview {
+	--switchback-gap: 1.5rem;
+
+	.wp-block-post-template {
+		display: flex;
+		gap: var(--switchback-gap);
+		overflow-x: auto;
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		scroll-snap-type: x proximity;
+	}
+
+	.wp-block-post-template > .wp-block-post {
+		box-sizing: border-box;
+		flex: 0 0 calc(
+			(100% - (var(--switchback-columns, 3) - 1) * var(--switchback-gap)) /
+				var(--switchback-columns, 3)
+		);
+		min-width: 0;
+		margin: 0;
+		scroll-snap-align: start;
+	}
+}
