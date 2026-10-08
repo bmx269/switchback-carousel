@@ -63,6 +63,14 @@
 		scroll-snap-align: start;
 	}
 
+	/* Fluid mode: each slide takes `--switchback-min-width`, so however many
+	 * fit in the current viewport show side by side and the rest scroll.
+	 * No fixed breakpoints. Splide's fitMinimumWidth matches this
+	 * calculation after mount. */
+	&.is-fluid-columns:not(.is-ready) .splide__list > * {
+		flex: 0 0 var(--switchback-min-width, 240px);
+	}
+
 	/* Mounted: Splide owns sizing, spacing and position. */
 	&.is-ready {
 

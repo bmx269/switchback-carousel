@@ -24,11 +24,12 @@ export const QUERY_NAMESPACE = 'switchback-carousel/query-carousel';
 const DEFAULT_SWITCHBACK = {
 	enabled: false,
 	layout: {
+		fluid: false,
 		desktop: { columns: 3, step: 1, peek: 0 },
 		tablet: {},
 		mobile: { columns: 1, step: 1, peek: 0 },
 	},
-	slideWidth: { min: 0, max: 0 },
+	slideWidth: { min: 240, max: 0 },
 	focus: 'start',
 	motion: {
 		transition: 'slide',
@@ -176,61 +177,112 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 					checked={ !! sb.enabled }
 					onChange={ ( enabled ) => set( [ 'enabled' ], enabled ) }
 				/>
-				<RangeControl
-					label={ __( 'Columns (desktop)', 'switchback-carousel' ) }
-					min={ 1 }
-					max={ 8 }
-					value={ sb.layout?.desktop?.columns ?? 3 }
-					onChange={ ( columns ) =>
-						set(
-							[ 'layout' ],
-							{
-								...sb.layout,
-								desktop: {
-									...( sb.layout?.desktop || {} ),
-									columns,
-								},
-							}
-						)
+				<ToggleControl
+					label={ __(
+						'Fluid columns',
+						'switchback-carousel'
+					) }
+					help={ __(
+						'Columns automatically fit the carousel width based on a minimum slide width. No fixed breakpoints.',
+						'switchback-carousel'
+					) }
+					checked={ !! sb.layout?.fluid }
+					onChange={ ( fluid ) =>
+						set( [ 'layout' ], { ...sb.layout, fluid } )
 					}
 				/>
-				<RangeControl
-					label={ __( 'Columns (tablet)', 'switchback-carousel' ) }
-					min={ 1 }
-					max={ 8 }
-					allowReset
-					value={ sb.layout?.tablet?.columns }
-					onChange={ ( columns ) =>
-						set(
-							[ 'layout' ],
-							{
-								...sb.layout,
-								tablet: {
-									...( sb.layout?.tablet || {} ),
-									columns,
-								},
+				{ sb.layout?.fluid ? (
+					<RangeControl
+						label={ __(
+							'Minimum slide width (px)',
+							'switchback-carousel'
+						) }
+						help={ __(
+							'As many slides as fit at this width will show side by side; the rest scroll.',
+							'switchback-carousel'
+						) }
+						min={ 100 }
+						max={ 800 }
+						step={ 10 }
+						value={ sb.slideWidth?.min ?? 240 }
+						onChange={ ( min ) =>
+							set(
+								[ 'slideWidth' ],
+								{
+									...( sb.slideWidth || {} ),
+									min: min ?? 240,
+								}
+							)
+						}
+					/>
+				) : (
+					<>
+						<RangeControl
+							label={ __(
+								'Columns (desktop)',
+								'switchback-carousel'
+							) }
+							min={ 1 }
+							max={ 8 }
+							value={ sb.layout?.desktop?.columns ?? 3 }
+							onChange={ ( columns ) =>
+								set(
+									[ 'layout' ],
+									{
+										...sb.layout,
+										desktop: {
+											...( sb.layout?.desktop || {} ),
+											columns,
+										},
+									}
+								)
 							}
-						)
-					}
-				/>
-				<RangeControl
-					label={ __( 'Columns (mobile)', 'switchback-carousel' ) }
-					min={ 1 }
-					max={ 4 }
-					value={ sb.layout?.mobile?.columns ?? 1 }
-					onChange={ ( columns ) =>
-						set(
-							[ 'layout' ],
-							{
-								...sb.layout,
-								mobile: {
-									...( sb.layout?.mobile || {} ),
-									columns,
-								},
+						/>
+						<RangeControl
+							label={ __(
+								'Columns (tablet)',
+								'switchback-carousel'
+							) }
+							min={ 1 }
+							max={ 8 }
+							allowReset
+							value={ sb.layout?.tablet?.columns }
+							onChange={ ( columns ) =>
+								set(
+									[ 'layout' ],
+									{
+										...sb.layout,
+										tablet: {
+											...( sb.layout?.tablet || {} ),
+											columns,
+										},
+									}
+								)
 							}
-						)
-					}
-				/>
+						/>
+						<RangeControl
+							label={ __(
+								'Columns (mobile)',
+								'switchback-carousel'
+							) }
+							min={ 1 }
+							max={ 4 }
+							value={ sb.layout?.mobile?.columns ?? 1 }
+							onChange={ ( columns ) =>
+								set(
+									[ 'layout' ],
+									{
+										...sb.layout,
+										mobile: {
+											...( sb.layout?.mobile || {} ),
+											columns,
+										},
+									}
+								)
+							}
+						/>
+					</>
+				) }
 				<SelectControl
 					label={ __( 'At the end', 'switchback-carousel' ) }
 					value={ sb.motion?.loop ?? 'none' }
@@ -410,13 +462,16 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 			return <BlockListBlock { ...props } />;
 		}
 		const sb = props.attributes.switchback;
+		const fluid = !! sb.layout?.fluid;
 		const desktop = sb.layout?.desktop?.columns ?? 3;
 		const tablet = sb.layout?.tablet?.columns ?? desktop;
 		const mobile = sb.layout?.mobile?.columns ?? 1;
+		const minWidth = sb.slideWidth?.min ?? 240;
 		const gap = gapToCss( props.attributes?.style?.spacing?.blockGap );
 		const className = [
 			props.className,
 			'is-switchback-carousel-preview',
+			fluid && 'is-fluid-columns',
 		]
 			.filter( Boolean )
 			.join( ' ' );
@@ -428,6 +483,7 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 				'--switchback-columns-desktop': desktop,
 				'--switchback-columns-tablet': tablet,
 				'--switchback-columns-mobile': mobile,
+				...( fluid && { '--switchback-min-width': `${ minWidth }px` } ),
 				...( gap && { '--switchback-gap': gap } ),
 			},
 		};

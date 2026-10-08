@@ -145,4 +145,9 @@
 		margin: 0;
 		scroll-snap-align: start;
 	}
+
+	/* Fluid preview: each slide at the minimum width; the rest scroll. */
+	&.is-fluid-columns .wp-block-post-template > .wp-block-post {
+		flex: 0 0 var(--switchback-min-width, 240px);
+	}
 }

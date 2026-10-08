@@ -53,9 +53,10 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 	$width    = (array) ( $settings['slideWidth'] ?? array() );
 	$gap      = horizontal_gap( $block_attrs );
 
-	$fade = 'fade' === ( $motion['transition'] ?? 'slide' );
-	$loop = one_of( $motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
-	$rtl  = 'auto' === ( $settings['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === ( $settings['direction'] ?? '' );
+	$fade  = 'fade' === ( $motion['transition'] ?? 'slide' );
+	$loop  = one_of( $motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
+	$rtl   = 'auto' === ( $settings['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === ( $settings['direction'] ?? '' );
+	$fluid = ! $fade && ! empty( $layout['fluid'] );
 
 	$device = static function ( array $d, array $fallback ) {
 		return array(
@@ -108,8 +109,19 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		$type = 'loop';
 	}
 
+	// Fluid mode: let fitMinimumWidth cap perPage based on the minimum slide
+	// width at mount and on resize. The high upper bound gives it room to
+	// place as many slides as actually fit.
+	$desktop_options = $fluid
+		? array(
+			'perPage' => 12,
+			'perMove' => 1,
+			'padding' => 0,
+		)
+		: $per_device( $desktop );
+
 	$options = array_merge(
-		$per_device( $desktop ),
+		$desktop_options,
 		array(
 			'type'          => $type,
 			'rewind'        => 'rewind' === $loop,
@@ -134,10 +146,12 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 				'rewindSpeed' => 0,
 				'autoplay'    => 'pause',
 			),
-			'breakpoints'   => array(
-				781 => $per_device( $tablet ),
-				480 => $per_device( $mobile ),
-			),
+			'breakpoints'   => $fluid
+				? new \stdClass()
+				: array(
+					781 => $per_device( $tablet ),
+					480 => $per_device( $mobile ),
+				),
 		)
 	);
 
@@ -159,6 +173,7 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 			'tablet'  => $tablet['columns'],
 			'mobile'  => $mobile['columns'],
 		),
+		'fluid'            => $fluid,
 		'rtl'              => $rtl,
 		'edges'    => array(
 			'overflow' => ! empty( ( (array) ( $settings['edges'] ?? array() ) )['overflow'] ),
@@ -235,6 +250,9 @@ function wrap_as_track( string $html, array $cfg ): string {
 	if ( ! empty( $cfg['grabCursor'] ) ) {
 		$classes[] = 'has-grab-cursor';
 	}
+	if ( ! empty( $cfg['fluid'] ) ) {
+		$classes[] = 'is-fluid-columns';
+	}
 	$processor = new WP_HTML_Tag_Processor( $html );
 	if ( $processor->next_tag( array( 'tag_name' => 'div', 'class_name' => 'wp-block-query' ) ) ) {
 		foreach ( $classes as $c ) {
@@ -273,6 +291,9 @@ function wrap_as_track( string $html, array $cfg ): string {
 		}
 		if ( ! empty( $cfg['maxWidth'] ) ) {
 			$style_vars[] = '--switchback-max-width:' . (int) $cfg['maxWidth'] . 'px';
+		}
+		if ( ! empty( $cfg['fluid'] ) && ! empty( $cfg['minWidth'] ) ) {
+			$style_vars[] = '--switchback-min-width:' . (int) $cfg['minWidth'] . 'px';
 		}
 		$existing_style = (string) $processor->get_attribute( 'style' );
 		$style_prefix   = '' === trim( $existing_style ) ? '' : rtrim( $existing_style, '; ' ) . ';';
