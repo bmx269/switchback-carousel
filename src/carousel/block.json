@@ -198,15 +198,58 @@
 			"background": true,
 			"text": true,
 			"link": true,
-			"heading": true
+			"heading": true,
+			"button": true,
+			"gradients": true
 		},
 		"typography": {
-			"fontSize": true
+			"fontSize": true,
+			"fontFamily": true,
+			"lineHeight": true,
+			"letterSpacing": true,
+			"textAlign": true,
+			"textDecoration": true,
+			"textTransform": true,
+			"fontStyle": true,
+			"fontWeight": true,
+			"writingMode": true,
+			"__experimentalDefaultControls": {
+				"fontSize": true,
+				"fontFamily": true
+			}
 		},
 		"spacing": {
 			"margin": true,
 			"padding": true,
-			"blockGap": true
+			"blockGap": true,
+			"__experimentalDefaultControls": {
+				"margin": true,
+				"padding": true,
+				"blockGap": true
+			}
+		},
+		"__experimentalBorder": {
+			"radius": true,
+			"color": true,
+			"width": true,
+			"style": true,
+			"__experimentalDefaultControls": {
+				"radius": true,
+				"color": true,
+				"width": true,
+				"style": true
+			}
+		},
+		"shadow": true,
+		"dimensions": {
+			"minHeight": true,
+			"aspectRatio": true
+		},
+		"position": {
+			"sticky": true
+		},
+		"filter": {
+			"duotone": true
 		},
 		"layout": {
 			"allowSwitching": false,
@@ -214,6 +257,9 @@
 			"default": {
 				"type": "constrained"
 			}
+		},
+		"interactivity": {
+			"clientNavigation": true
 		}
 	},
 	"editorScript": "file:./index.js",
