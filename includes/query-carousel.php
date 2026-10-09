@@ -109,17 +109,37 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		$type = 'loop';
 	}
 
-	// Fluid mode: each slide is fixed at the user's minimum width. Splide
-	// uses fixedWidth to position, overflow-detect, drag, and paginate from
-	// that one value, instead of partitioning the track into perPage equal
-	// slots. perPage is the navigation step only, so a page = one slide.
-	$fluid_min      = $fluid ? bounded_int( $width['min'] ?? 240, 100, 800, 240 ) : 0;
+	// Fluid mode: compute Splide breakpoints that step perPage up or down as
+	// the viewport grows past each (minWidth + gap) threshold. Splide stays
+	// in its standard perPage layout — drag, arrows and pagination all work
+	// the way they always do, we just hand them the right perPage per
+	// viewport width.
+	$fluid_min        = 0;
+	$fluid_breakpoints = array();
+	$fluid_max_cols   = 8;
+	if ( $fluid ) {
+		$fluid_min = bounded_int( $width['min'] ?? 240, 100, 800, 240 );
+		// Gap in pixels — use the configured value when it's a px length,
+		// otherwise fall back to 24px for threshold arithmetic.
+		$gap_px = 24;
+		if ( preg_match( '/^(\d+(?:\.\d+)?)px$/', $gap, $m ) ) {
+			$gap_px = (int) $m[1];
+		}
+		$step = $fluid_min + $gap_px;
+		for ( $cols = 1; $cols < $fluid_max_cols; $cols++ ) {
+			// Largest viewport where `$cols` slides fit and `$cols + 1` don't.
+			$threshold                        = ( $cols + 1 ) * $step - $gap_px - 1;
+			$fluid_breakpoints[ $threshold ] = array(
+				'perPage' => $cols,
+				'perMove' => 1,
+			);
+		}
+	}
 	$desktop_options = $fluid
 		? array(
-			'fixedWidth' => $fluid_min . 'px',
-			'perPage'    => 1,
-			'perMove'    => 1,
-			'padding'    => 0,
+			'perPage' => $fluid_max_cols,
+			'perMove' => 1,
+			'padding' => 0,
 		)
 		: $per_device( $desktop );
 
@@ -150,7 +170,7 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 				'autoplay'    => 'pause',
 			),
 			'breakpoints'   => $fluid
-				? new \stdClass()
+				? $fluid_breakpoints
 				: array(
 					781 => $per_device( $tablet ),
 					480 => $per_device( $mobile ),
@@ -318,6 +338,13 @@ add_filter(
 		$attrs = (array) ( $block['attrs'] ?? array() );
 		if ( ! carousel_display_enabled( $attrs ) ) {
 			return $html;
+		}
+		// A core/query carousel doesn't trigger the automatic viewScript enqueue
+		// WordPress runs for `switchback-carousel/track` (because the track block
+		// isn't on the page). Enqueue it ourselves so Splide mounts.
+		$track_view = generate_block_asset_handle( 'switchback-carousel/track', 'viewScript' );
+		if ( wp_script_is( $track_view, 'registered' ) && ! wp_script_is( $track_view, 'enqueued' ) ) {
+			wp_enqueue_script( $track_view );
 		}
 		$settings = (array) ( $attrs['switchback'] ?? array() );
 		$config   = splide_options_from_settings( $settings, $attrs );
