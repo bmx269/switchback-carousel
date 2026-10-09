@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"title": "Switchback Carousel",
 	"category": "media",
-	"description": "A slider of hand-built slides or slides generated from posts. Put controls, headings and other blocks anywhere around the slides.",
+	"description": "A carousel of hand-built slides or posts from a Query Loop. Put controls, headings and other blocks anywhere around the slides.",
 	"keywords": [
 		"slider",
 		"slideshow",

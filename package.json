@@ -1,7 +1,7 @@
 {
   "name": "switchback-carousel",
   "version": "1.0.0",
-  "description": "Carousel blocks with hand-built slides or one slide per post from any post type, filterable by terms and core or SCF/ACF fields. Built on Splide.",
+  "description": "Carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel.",
   "author": "Trent Stromkins",
   "license": "GPL-2.0-or-later",
   "private": true,
