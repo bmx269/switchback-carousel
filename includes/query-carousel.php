@@ -44,7 +44,8 @@ function carousel_display_enabled( array $attrs ): bool {
  * Translate carousel settings into Splide options. Mirrors track/render.php's
  * logic so the two render paths produce identical runtime behaviour.
  *
- * @param array $settings The `switchback` attribute on core/query.
+ * @param array $settings    The `switchback` attribute on core/query.
+ * @param array $block_attrs All core/query attributes (read for blockGap).
  */
 function splide_options_from_settings( array $settings, array $block_attrs = array() ): array {
 	$motion   = (array) ( $settings['motion'] ?? array() );
@@ -58,7 +59,7 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 	$rtl   = 'auto' === ( $settings['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === ( $settings['direction'] ?? '' );
 	$fluid = ! $fade && ! empty( $layout['fluid'] );
 
-	$device = static function ( array $d, array $fallback ) {
+	$device  = static function ( array $d, array $fallback ) {
 		return array(
 			'columns' => bounded_int( $d['columns'] ?? null, 1, 8, $fallback['columns'] ),
 			'step'    => bounded_int( $d['step'] ?? null, 1, 8, $fallback['step'] ),
@@ -99,10 +100,10 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		);
 	};
 
-	$autoplays   = ! empty( $autoplay['enabled'] );
-	$interval    = 'continuous' !== ( $autoplay['mode'] ?? 'interval' );
-	$drag        = one_of( $motion['drag'] ?? 'snap', array( 'snap', 'free', 'none' ) );
-	$type        = 'slide';
+	$autoplays = ! empty( $autoplay['enabled'] );
+	$interval  = 'continuous' !== ( $autoplay['mode'] ?? 'interval' );
+	$drag      = one_of( $motion['drag'] ?? 'snap', array( 'snap', 'free', 'none' ) );
+	$type      = 'slide';
 	if ( $fade ) {
 		$type = 'fade';
 	} elseif ( 'loop' === $loop || ( $autoplays && ! $interval ) ) {
@@ -114,9 +115,9 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 	// in its standard perPage layout — drag, arrows and pagination all work
 	// the way they always do, we just hand them the right perPage per
 	// viewport width.
-	$fluid_min        = 0;
+	$fluid_min         = 0;
 	$fluid_breakpoints = array();
-	$fluid_max_cols   = 8;
+	$fluid_max_cols    = 8;
 	if ( $fluid ) {
 		$fluid_min = bounded_int( $width['min'] ?? 240, 100, 800, 240 );
 		// Gap in pixels — use the configured value when it's a px length,
@@ -128,7 +129,7 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		$step = $fluid_min + $gap_px;
 		for ( $cols = 1; $cols < $fluid_max_cols; $cols++ ) {
 			// Largest viewport where `$cols` slides fit and `$cols + 1` don't.
-			$threshold                        = ( $cols + 1 ) * $step - $gap_px - 1;
+			$threshold                       = ( $cols + 1 ) * $step - $gap_px - 1;
 			$fluid_breakpoints[ $threshold ] = array(
 				'perPage' => $cols,
 				'perMove' => 1,
@@ -198,18 +199,18 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 		),
 		'fluid'            => $fluid,
 		'rtl'              => $rtl,
-		'edges'    => array(
+		'edges'            => array(
 			'overflow' => ! empty( ( (array) ( $settings['edges'] ?? array() ) )['overflow'] ),
 			'fade'     => one_of( ( (array) ( $settings['edges'] ?? array() ) )['fade'] ?? 'none', array( 'none', 'both', 'end' ) ),
 		),
-		'grabCursor' => ! empty( $motion['grabCursor'] ),
+		'grabCursor'       => ! empty( $motion['grabCursor'] ),
 	);
 }
 
 /**
  * Add Splide classes and wrappers to a rendered core/query output.
  *
- * core/query normally returns:
+ * The core/query block normally returns:
  *   <div class="wp-block-query">
  *     <ul class="wp-block-post-template …"><li>…</li>…</ul>
  *     <!-- optional pagination / no-results -->
@@ -277,7 +278,12 @@ function wrap_as_track( string $html, array $cfg ): string {
 		$classes[] = 'is-fluid-columns';
 	}
 	$processor = new WP_HTML_Tag_Processor( $html );
-	if ( $processor->next_tag( array( 'tag_name' => 'div', 'class_name' => 'wp-block-query' ) ) ) {
+	if ( $processor->next_tag(
+		array(
+			'tag_name'   => 'div',
+			'class_name' => 'wp-block-query',
+		)
+	) ) {
 		foreach ( $classes as $c ) {
 			$processor->add_class( $c );
 		}
@@ -291,7 +297,12 @@ function wrap_as_track( string $html, array $cfg ): string {
 
 		$processor->set_attribute(
 			'data-switchback',
-			(string) wp_json_encode( array( 'splide' => $cfg['splide'], 'minWidth' => $cfg['minWidth'] ) )
+			(string) wp_json_encode(
+				array(
+					'splide'   => $cfg['splide'],
+					'minWidth' => $cfg['minWidth'],
+				)
+			)
 		);
 		$processor->set_attribute( 'aria-label', __( 'Carousel', 'switchback-carousel' ) );
 		if ( ! empty( $cfg['rtl'] ) ) {

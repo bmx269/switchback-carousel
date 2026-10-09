@@ -1,6 +1,6 @@
 <?php
 /**
- * Dynamic values in field rules.
+ * Dynamic values in Query Loop and Advanced Query Loop query arguments.
  *
  * @package SwitchbackCarousel
  */
@@ -10,7 +10,7 @@ namespace SwitchbackCarousel;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Dynamic values in field rules.
+ * Dynamic values in Query Loop and Advanced Query Loop query arguments.
  *
  *     {today}             2026-09-26   (Y-m-d)
  *     {today_ymd}         20260926     (SCF/ACF date picker storage)

@@ -30,21 +30,18 @@ const TEMPLATE = [
 function CopyLayout( { clientId } ) {
 	const registry = useRegistry();
 	const { replaceInnerBlocks } = useDispatch( 'core/block-editor' );
-	const { others, isQuery } = useSelect(
+	const others = useSelect(
 		( select ) => {
 			const editor = select( 'core/block-editor' );
 			const track = editor.getBlockRootClientId( clientId );
-			return {
-				others: editor
-					.getBlockOrder( track )
-					.filter( ( id ) => id !== clientId ),
-				isQuery: 'query' === editor.getBlockAttributes( track )?.mode,
-			};
+			return editor
+				.getBlockOrder( track )
+				.filter( ( id ) => id !== clientId );
 		},
 		[ clientId ]
 	);
 
-	if ( isQuery || ! others.length ) {
+	if ( ! others.length ) {
 		return null;
 	}
 

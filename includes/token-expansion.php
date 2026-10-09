@@ -3,11 +3,12 @@
  * Expand `{today}`, `{today+N}`, `{current_post_id}` and the rest of the
  * Switchback tokens inside WP_Query arguments produced by core/query (the
  * Query Loop block) and Advanced Query Loop. Lets authors write a relative
- * date in AQL's date_query panel without picking a literal timestamp.
+ * date such as `{today_ymd}` as an AQL meta query value instead of a literal
+ * date.
  *
- * Our own query-mode track already expands tokens because Query_Builder calls
- * Tokens::expand on rule values. This file adds the same convenience to the
- * Query Loop block and AQL, which bypass Query_Builder entirely.
+ * AQL's date_query panel can't use tokens: AQL splits date_primary into
+ * year/month/day with substr() before aql_query_vars runs, and its UI is a
+ * date picker. Its before/after-current options cover relative post dates.
  *
  * @package SwitchbackCarousel
  */
@@ -65,15 +66,13 @@ add_filter(
 );
 
 /**
- * Advanced Query Loop. $block_query is the raw block query attribute shape;
- * $inherited is a bool. We run after AQL has composed its date_query so our
+ * Advanced Query Loop. We run after AQL has composed its date_query so our
  * tokens expand inside the final argument array.
  */
 add_filter(
 	'aql_query_vars',
-	static function ( array $args, array $block_query, bool $inherited ): array {
+	static function ( array $args ): array {
 		return expand_tokens_deep( $args, token_context_post() );
 	},
-	20,
-	3
+	20
 );

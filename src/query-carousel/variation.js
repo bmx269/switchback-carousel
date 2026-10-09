@@ -13,7 +13,6 @@ import {
 	RangeControl,
 	ToggleControl,
 	SelectControl,
-	__experimentalNumberControl as NumberControl,
 } from '@wordpress/components';
 import { createHigherOrderComponent } from '@wordpress/compose';
 import { Fragment } from '@wordpress/element';
@@ -135,6 +134,11 @@ registerBlockVariation( 'core/query', {
 /**
  * Shallow merge a nested path (e.g. `motion.loop`) into the current
  * switchback object.
+ *
+ * @param {Object}   current Current `switchback` attribute.
+ * @param {string[]} path    One or two keys, e.g. `[ 'motion', 'loop' ]`.
+ * @param {*}        value   New value at that path.
+ * @return {Object} Updated `switchback` attribute.
  */
 function mergeSwitchback( current, path, value ) {
 	const next = { ...( current || DEFAULT_SWITCHBACK ) };
@@ -152,6 +156,10 @@ function mergeSwitchback( current, path, value ) {
  * carousel variation is active. Keeps the surface small for the first cut:
  * columns per device, motion, autoplay, drag, edges. Everything else runs on
  * sensible defaults until users ask for the knobs.
+ *
+ * @param {Object}   props               Block edit props.
+ * @param {Object}   props.attributes    core/query attributes.
+ * @param {Function} props.setAttributes Attribute setter.
  */
 const CarouselPanel = ( { attributes, setAttributes } ) => {
 	const sb = attributes.switchback || DEFAULT_SWITCHBACK;
@@ -166,10 +174,7 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 				title={ __( 'Carousel display', 'switchback-carousel' ) }
 			>
 				<ToggleControl
-					label={ __(
-						'Display as carousel',
-						'switchback-carousel'
-					) }
+					label={ __( 'Display as carousel', 'switchback-carousel' ) }
 					help={ __(
 						'Render this Query Loop as a Switchback carousel. Works alongside Advanced Query Loop.',
 						'switchback-carousel'
@@ -178,10 +183,7 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 					onChange={ ( enabled ) => set( [ 'enabled' ], enabled ) }
 				/>
 				<ToggleControl
-					label={ __(
-						'Fluid columns',
-						'switchback-carousel'
-					) }
+					label={ __( 'Fluid columns', 'switchback-carousel' ) }
 					help={ __(
 						'Columns automatically fit the carousel width based on a minimum slide width. No fixed breakpoints.',
 						'switchback-carousel'
@@ -206,13 +208,10 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 						step={ 10 }
 						value={ sb.slideWidth?.min ?? 240 }
 						onChange={ ( min ) =>
-							set(
-								[ 'slideWidth' ],
-								{
-									...( sb.slideWidth || {} ),
-									min: min ?? 240,
-								}
-							)
+							set( [ 'slideWidth' ], {
+								...( sb.slideWidth || {} ),
+								min: min ?? 240,
+							} )
 						}
 					/>
 				) : (
@@ -226,16 +225,13 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							max={ 8 }
 							value={ sb.layout?.desktop?.columns ?? 3 }
 							onChange={ ( columns ) =>
-								set(
-									[ 'layout' ],
-									{
-										...sb.layout,
-										desktop: {
-											...( sb.layout?.desktop || {} ),
-											columns,
-										},
-									}
-								)
+								set( [ 'layout' ], {
+									...sb.layout,
+									desktop: {
+										...( sb.layout?.desktop || {} ),
+										columns,
+									},
+								} )
 							}
 						/>
 						<RangeControl
@@ -248,16 +244,13 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							allowReset
 							value={ sb.layout?.tablet?.columns }
 							onChange={ ( columns ) =>
-								set(
-									[ 'layout' ],
-									{
-										...sb.layout,
-										tablet: {
-											...( sb.layout?.tablet || {} ),
-											columns,
-										},
-									}
-								)
+								set( [ 'layout' ], {
+									...sb.layout,
+									tablet: {
+										...( sb.layout?.tablet || {} ),
+										columns,
+									},
+								} )
 							}
 						/>
 						<RangeControl
@@ -269,16 +262,13 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							max={ 4 }
 							value={ sb.layout?.mobile?.columns ?? 1 }
 							onChange={ ( columns ) =>
-								set(
-									[ 'layout' ],
-									{
-										...sb.layout,
-										mobile: {
-											...( sb.layout?.mobile || {} ),
-											columns,
-										},
-									}
-								)
+								set( [ 'layout' ], {
+									...sb.layout,
+									mobile: {
+										...( sb.layout?.mobile || {} ),
+										columns,
+									},
+								} )
 							}
 						/>
 					</>
@@ -312,10 +302,7 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 						},
 						{
 							value: 'free',
-							label: __(
-								'Glide freely',
-								'switchback-carousel'
-							),
+							label: __( 'Glide freely', 'switchback-carousel' ),
 						},
 						{
 							value: 'none',
@@ -391,10 +378,7 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 						},
 						{
 							value: 'end',
-							label: __(
-								'Trailing edge',
-								'switchback-carousel'
-							),
+							label: __( 'Trailing edge', 'switchback-carousel' ),
 						},
 						{
 							value: 'both',

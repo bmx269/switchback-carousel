@@ -20,31 +20,13 @@
 	scroll-snap-type: x proximity;
 }
 
-.switchback-editor__strip > .wp-block-switchback-carousel-slide,
-.switchback-editor__strip > .switchback-editor__cell {
+.switchback-editor__strip > .wp-block-switchback-carousel-slide {
 	box-sizing: border-box;
 	flex: 0 0 calc((100% - (var(--switchback-columns) - 1) * var(--switchback-gap)) / var(--switchback-columns));
 	min-width: 0;
 	max-width: var(--switchback-max-width, none);
 	margin: 0 !important;
 	scroll-snap-align: start;
-}
-
-/* In query mode only the first slide is the design; extras stay hidden. */
-.switchback-editor__design > .wp-block-switchback-carousel-slide:not(:first-child) {
-	display: none;
-}
-
-.switchback-editor__preview {
-	cursor: pointer;
-	opacity: 0.8;
-	transition: opacity 0.15s ease-out;
-
-	&:hover,
-	&:focus-visible {
-		outline: 1px dashed currentcolor;
-		opacity: 1;
-	}
 }
 
 /* Core positions the appender absolutely; keep it at the end of the strip. */
@@ -61,12 +43,6 @@
 	flex-direction: column;
 	align-self: center;
 	gap: 8px;
-}
-
-.switchback-editor__status {
-	display: grid;
-	min-height: 120px;
-	place-items: center;
 }
 
 .switchback-editor__icons {
@@ -86,15 +62,6 @@
 	}
 }
 
-.switchback-editor__rule {
-	display: grid;
-	gap: 8px;
-	margin: 0 0 12px;
-	padding: 12px;
-	border: 1px solid #e0e0e0;
-	border-radius: 4px;
-}
-
 /**
  * Editor preview for the Query Loop carousel variation. The server-side
  * render transform doesn't run in the editor, so lay out core/post-template's
@@ -103,26 +70,14 @@
  */
 .is-switchback-carousel-preview {
 	--switchback-gap: 1.5rem;
-	--switchback-columns-active: var(
-		--switchback-columns-desktop,
-		var(--switchback-columns, 3)
-	);
+	--switchback-columns-active: var(--switchback-columns-desktop, var(--switchback-columns, 3));
 
 	@media (max-width: 781px) {
-		--switchback-columns-active: var(
-			--switchback-columns-tablet,
-			var(--switchback-columns-desktop, var(--switchback-columns, 2))
-		);
+		--switchback-columns-active: var(--switchback-columns-tablet, var(--switchback-columns-desktop, var(--switchback-columns, 2)));
 	}
 
 	@media (max-width: 480px) {
-		--switchback-columns-active: var(
-			--switchback-columns-mobile,
-			var(
-				--switchback-columns-tablet,
-				var(--switchback-columns-desktop, 1)
-			)
-		);
+		--switchback-columns-active: var(--switchback-columns-mobile, var(--switchback-columns-tablet, var(--switchback-columns-desktop, 1)));
 	}
 
 	.wp-block-post-template {
@@ -137,10 +92,7 @@
 
 	.wp-block-post-template > .wp-block-post {
 		box-sizing: border-box;
-		flex: 0 0 calc(
-			(100% - (var(--switchback-columns-active) - 1) * var(--switchback-gap)) /
-				var(--switchback-columns-active)
-		);
+		flex: 0 0 calc((100% - (var(--switchback-columns-active) - 1) * var(--switchback-gap)) / var(--switchback-columns-active));
 		min-width: 0;
 		margin: 0;
 		scroll-snap-align: start;

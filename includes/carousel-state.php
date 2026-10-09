@@ -58,9 +58,9 @@ function derive_state( array $parsed_carousel ): array {
 
 	// Fade shows one slide at a time regardless of columns.
 	if ( 'fade' !== ( $motion['transition'] ?? 'slide' ) ) {
-		$desktop            = (array) ( $layout['desktop'] ?? array() );
-		$state['perPage']   = bounded_int( $desktop['columns'] ?? null, 1, 8, 3 );
-		$state['perMove']   = min( bounded_int( $desktop['step'] ?? null, 1, 8, 1 ), $state['perPage'] );
+		$desktop          = (array) ( $layout['desktop'] ?? array() );
+		$state['perPage'] = bounded_int( $desktop['columns'] ?? null, 1, 8, 3 );
+		$state['perMove'] = min( bounded_int( $desktop['step'] ?? null, 1, 8, 1 ), $state['perPage'] );
 	}
 
 	foreach ( $track['innerBlocks'] ?? array() as $inner ) {
@@ -102,7 +102,7 @@ add_filter(
 		if ( 'switchback-carousel/carousel' !== ( $parsed['blockName'] ?? '' ) ) {
 			return $parsed;
 		}
-		$state                       = derive_state( $parsed );
+		$state                         = derive_state( $parsed );
 		$parsed['attrs']['slideCount'] = $state['slideCount'];
 		$parsed['attrs']['perPage']    = $state['perPage'];
 		$parsed['attrs']['perMove']    = $state['perMove'];

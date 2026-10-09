@@ -59,10 +59,10 @@ function design_carousel( array $track, string $slides, string $after, array $at
  * @param array  $carousel_attrs Outer carousel wrapper attributes.
  */
 function design_query_carousel( array $query_attrs, array $switchback, string $post_template, string $after, array $carousel_attrs = array() ): string {
-	$query = array(
-		'namespace' => 'advanced-query-loop',
-		'align'     => 'wide',
-		'query'     => $query_attrs + array(
+	$query        = array(
+		'namespace'  => 'advanced-query-loop',
+		'align'      => 'wide',
+		'query'      => $query_attrs + array(
 			'perPage' => 6,
 			'pages'   => 0,
 			'offset'  => 0,

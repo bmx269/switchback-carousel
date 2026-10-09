@@ -81,5 +81,4 @@ test.describe( 'Carousel in the editor', () => {
 		await expect( controls ).toHaveClass( /\balignwide\b/ );
 		await expect( controls ).toHaveClass( /\bis-layout-flex\b/ );
 	} );
-
 } );

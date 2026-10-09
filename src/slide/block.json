@@ -5,7 +5,7 @@
 	"version": "1.0.0",
 	"title": "Slide",
 	"category": "media",
-	"description": "One slide. In a query carousel, the first slide is the design repeated for every post.",
+	"description": "One hand-built slide. Holds any blocks.",
 	"parent": [
 		"switchback-carousel/track"
 	],
