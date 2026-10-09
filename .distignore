@@ -6,12 +6,14 @@
 # src/ and package.json ship on purpose: they are the human-readable source
 # of build/ (Plugin Guideline 4).
 /.git
-/.claude
+# Unanchored: editor tooling can leave .claude/ folders at any depth.
+.claude
 /.github
 /.wordpress-org
 /node_modules
 /vendor
 /tests
+/src/**/test
 /scripts
 /artifacts
 .build-tmp

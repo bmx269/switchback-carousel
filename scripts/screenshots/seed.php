@@ -15,27 +15,11 @@ require_once ABSPATH . 'wp-admin/includes/media.php';
 $dir = dirname( __DIR__, 2 ) . '/artifacts/screenshots/images';
 
 // Start clean.
-foreach ( get_posts( array( 'post_type' => array( 'post', 'page', 'attachment', 'acf-field-group', 'acf-field' ), 'numberposts' => -1, 'post_status' => 'any', 'fields' => 'ids' ) ) as $id ) {
+foreach ( get_posts( array( 'post_type' => array( 'post', 'page', 'attachment' ), 'numberposts' => -1, 'post_status' => 'any', 'fields' => 'ids' ) ) as $id ) {
 	wp_delete_post( $id, true );
 }
 update_option( 'blogname', 'Switchback Trails' );
 update_option( 'blogdescription', 'Notes from the high country' );
-
-// SCF field group: distance (number) and hike date (date picker).
-if ( function_exists( 'acf_import_field_group' ) ) {
-	acf_import_field_group(
-		array(
-			'key'      => 'group_trail_details',
-			'title'    => 'Trail details',
-			'fields'   => array(
-				array( 'key' => 'field_trail_distance', 'name' => 'distance', 'label' => 'Distance (km)', 'type' => 'number' ),
-				array( 'key' => 'field_trail_date', 'name' => 'hike_date', 'label' => 'Hike date', 'type' => 'date_picker', 'return_format' => 'F j, Y', 'display_format' => 'F j, Y' ),
-				array( 'key' => 'field_trail_region', 'name' => 'region', 'label' => 'Region', 'type' => 'text' ),
-			),
-			'location' => array( array( array( 'param' => 'post_type', 'operator' => '==', 'value' => 'post' ) ) ),
-		)
-	);
-}
 
 $trails = array(
 	array( 'Ridge Loop at Dawn', 12.4, 'Coast Mountains', 'Headlamps on at five, summit coffee at seven.' ),
@@ -64,9 +48,8 @@ foreach ( $trails as $index => list( $title, $distance, $region, $excerpt ) ) {
 			'post_category' => array( $distance > 12 ? $categories['Overnights'] : $categories['Day hikes'] ),
 		)
 	);
-	update_field( 'distance', $distance, $id );
-	update_field( 'hike_date', gmdate( 'Ymd', strtotime( '-' . ( $index * 9 + 4 ) . ' days' ) ), $id );
-	update_field( 'region', $region, $id );
+	update_post_meta( $id, 'distance', $distance );
+	update_post_meta( $id, 'region', $region );
 
 	$source = $dir . '/trail-' . ( $index + 1 ) . '.jpg';
 	$tmp    = wp_tempnam( $source );
@@ -80,12 +63,18 @@ foreach ( $trails as $index => list( $title, $distance, $region, $excerpt ) ) {
 $registry = WP_Block_Patterns_Registry::get_instance();
 $pattern  = static fn( string $slug ): string => $registry->get_registered( 'switchback-carousel/' . $slug )['content'];
 
-// Screenshot 1 & 2: posts carousel with overlay arrows, filtered by distance.
+// Screenshots 1–3: the Latest posts pattern (a Query Loop with carousel
+// display on, in Advanced Query Loop's namespace) filtered by an AQL meta
+// query on distance.
 $journal = str_replace(
-	'{"mode":"query",',
-	'{"mode":"query","query":{"postType":"post","limit":8,"sort":{"by":"date","direction":"desc"},"fields":{"match":"all","rules":[{"field":"distance","operator":"gt","value":"6","cast":"decimal"}]}},',
-	$pattern( 'latest-posts' )
+	'"query":{"postType":"post","perPage":6,',
+	'"query":{"postType":"post","perPage":8,"meta_query":{"relation":"AND","queries":[{"id":"distance","meta_key":"distance","meta_value":"10","meta_compare":"\u003e","meta_type":"DECIMAL"}]},',
+	$pattern( 'latest-posts' ),
+	$count
 );
+if ( 1 !== $count ) {
+	WP_CLI::error( 'Latest posts pattern changed shape; update the meta query splice.' );
+}
 $journal = str_replace( '<!-- wp:post-date /-->', '<!-- wp:post-excerpt {"moreText":"Read the notes","excerptLength":14} /-->', $journal );
 
 wp_insert_post(
@@ -94,7 +83,8 @@ wp_insert_post(
 		'post_status'  => 'publish',
 		'post_title'   => 'Trail journal',
 		'post_name'    => 'trail-journal',
-		'post_content' => '<!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Every hike longer than six kilometres, newest first.</p><!-- /wp:paragraph -->' . $journal,
+		// wp_insert_post() unslashes; keep the JSON's \u escapes intact.
+		'post_content' => wp_slash( '<!-- wp:paragraph {"align":"center"} --><p class="has-text-align-center">Every hike longer than ten kilometres, newest first.</p><!-- /wp:paragraph -->' . $journal ),
 	)
 );
 
@@ -121,9 +111,11 @@ wp_insert_post(
 		'post_status'  => 'publish',
 		'post_title'   => 'Trail tips',
 		'post_name'    => 'trail-tips',
-		'post_content' => '<!-- wp:heading --><h2 class="wp-block-heading">Before you go</h2><!-- /wp:heading -->' . $cards
+		'post_content' => wp_slash(
+			'<!-- wp:heading --><h2 class="wp-block-heading">Before you go</h2><!-- /wp:heading -->' . $cards
 			. '<!-- wp:spacer {"height":"48px"} --><div style="height:48px" aria-hidden="true" class="wp-block-spacer"></div><!-- /wp:spacer -->'
-			. '<!-- wp:heading --><h2 class="wp-block-heading">What readers say</h2><!-- /wp:heading -->' . $quotes,
+			. '<!-- wp:heading --><h2 class="wp-block-heading">What readers say</h2><!-- /wp:heading -->' . $quotes
+		),
 	)
 );
 

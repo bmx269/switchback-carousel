@@ -24,7 +24,7 @@ Build slides yourself with any blocks. For posts, select a **Query Loop** and tu
 
 Need more than core's Query Loop filters? Install [Advanced Query Loop](https://wordpress.org/plugins/advanced-query-loop/) and filter by post meta and SCF/ACF fields, dates, multiple post types, specific posts and more. Switchback handles the display and AQL handles the query, both on the same block.
 
-In AQL's meta and date fields, use relative values like `{today}`, `{today+7}` or `{today_ymd}` for "upcoming" carousels that never go stale.
+In AQL's meta query values, use relative dates like `{today}`, `{today+7}` or `{today_ymd}` for "upcoming" carousels that never go stale.
 
 = Settings =
 
@@ -91,8 +91,8 @@ The carousel follows the WAI-ARIA carousel pattern through Splide: slides are la
 == Screenshots ==
 
 1. A posts carousel on the front end, with arrows over the slides.
-2. Designing a carousel from posts: edit the first slide while the editor previews your real posts.
-3. Filtering posts by field values from registered meta and SCF/ACF fields.
+2. A Query Loop shown as a carousel: turn on Display as carousel and set columns, motion and edges in the block sidebar.
+3. Filtering the same carousel with Advanced Query Loop's meta query: hikes longer than ten kilometres.
 4. Feature cards and a fading quote rotator with pagination and a pause button.
 5. Controls: arrows in seven icons and five weights, pagination, progress, counter and play/pause.
 6. Layout per device: slides side by side, slides per move and a peek at the next slide.

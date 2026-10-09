@@ -1,7 +1,7 @@
 /**
  * Capture the WordPress.org screenshots from the wp-env dev site.
  *
- * 1. npm run env:start
+ * 1. npm run env:start (wp-env installs Advanced Query Loop)
  * 2. node scripts/screenshots/images.js
  * 3. npx wp-env run cli --env-cwd=wp-content/plugins/switchback-carousel wp eval-file scripts/screenshots/seed.php
  * 4. node scripts/screenshots/capture.js
@@ -14,9 +14,8 @@ const out = path.join( __dirname, '..', '..', '.wordpress-org' );
 const shot = ( name ) => path.join( out, name );
 
 async function pageId( page, slug ) {
-	const response = await page.request.get( `${ BASE }/?rest_route=/wp/v2/pages&slug=${ slug }&_fields=id`, {
-		headers: { 'X-WP-Nonce': await page.evaluate( () => window.wpApiSettings?.nonce ?? '' ) },
-	} );
+	// Published pages are public; an empty nonce would make REST reject the request.
+	const response = await page.request.get( `${ BASE }/?rest_route=/wp/v2/pages&slug=${ slug }&_fields=id` );
 	return ( await response.json() )[ 0 ].id;
 }
 
@@ -52,7 +51,11 @@ async function sidebarScrollTo( page, text ) {
 		.locator( '.interface-complementary-area' )
 		.getByText( text, { exact: true } )
 		.first()
-		.evaluate( ( el ) => el.scrollIntoView( { block: 'start' } ) );
+		.evaluate( ( el ) => {
+			el.scrollIntoView( { block: 'start' } );
+			// Clear the sticky block card and tabs at the top of the sidebar.
+			el.closest( '.interface-complementary-area' )?.scrollBy( 0, -56 );
+		} );
 }
 
 async function panel( page, title, open = true ) {
@@ -94,19 +97,20 @@ async function panel( page, title, open = true ) {
 	await front.screenshot( { path: shot( 'screenshot-4.png' ), clip: { x: 0, y: tips.y - 48, width: 1280, height: 760 } } );
 	await front.close();
 
-	// 2. Designing from posts in the editor.
+	// 2. A Query Loop shown as a carousel: the Carousel display panel.
 	await openEditor( page, 'trail-journal' );
-	await select( page, 'switchback-carousel/track' );
-	await panel( page, 'Slides', true );
-	await panel( page, 'Which posts', true );
+	await select( page, 'core/query' );
+	await panel( page, 'Carousel display', true );
+	await sidebarScrollTo( page, 'Carousel display' );
+	await page.waitForTimeout( 500 );
 	await page.screenshot( { path: shot( 'screenshot-2.png' ) } );
 
-	// 3. Field value filtering.
-	await panel( page, 'Slides', false );
-	await panel( page, 'Layout', false );
-	await sidebarScrollTo( page, 'Narrow it down' );
-	await page.waitForTimeout( 500 );
+	// 3. Advanced Query Loop's meta query filtering the same carousel.
+	await panel( page, 'Carousel display', false );
+	await page.getByRole( 'button', { name: 'Open Post Meta query builder' } ).click();
+	await page.waitForTimeout( 800 );
 	await page.screenshot( { path: shot( 'screenshot-3.png' ) } );
+	await page.keyboard.press( 'Escape' );
 
 	// 5. Controls and the icon picker.
 	await openEditor( page, 'trail-tips' );

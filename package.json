@@ -26,6 +26,7 @@
     "includes",
     "build",
     "src",
+    "!src/**/test",
     "readme.txt",
     "LICENSE",
     "package.json"
@@ -41,6 +42,7 @@
     "@wordpress/core-data": "^8.1.0",
     "@wordpress/data": "^10.56.0",
     "@wordpress/element": "^8.8.0",
+    "@wordpress/hooks": "^4.56.0",
     "@wordpress/i18n": "^6.29.0"
   },
   "devDependencies": {

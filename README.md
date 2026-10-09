@@ -69,7 +69,9 @@ Start from an Advanced Query Loop block rather than the **Switchback Carousel (Q
 
 ### Relative dates and tokens
 
-Switchback expands tokens in the final query arguments of every Query Loop. It hooks `query_loop_block_query_vars` for core and `aql_query_vars` for AQL, both at priority 20, after AQL has built its arguments. You can type relative values into AQL's meta and date fields instead of fixed dates. For example, a meta query of "`event_date` is at least `{today_ymd}`" makes an upcoming-events carousel that never goes stale.
+Switchback expands tokens in the final query arguments of every Query Loop. It hooks `query_loop_block_query_vars` for core and `aql_query_vars` for AQL, both at priority 20, after AQL has built its arguments. The main use is AQL's **meta query** values: a meta query of "`event_date` is greater than or equal to `{today_ymd}`" makes an upcoming-events carousel that never goes stale.
+
+Tokens don't work in AQL's date query fields. AQL splits those dates into year, month and day before Switchback sees them, and its date picker doesn't accept typed text. For relative post dates, use AQL's built-in "before/after the current date" options.
 
 | Token | Becomes |
 |---|---|
