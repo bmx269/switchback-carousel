@@ -27,6 +27,35 @@ const controls = ( ...types ) =>
 		)
 		.join( '' );
 
+/**
+ * A Switchback Carousel holding a Query Loop with carousel display on, three
+ * posts per view, and arrows.
+ *
+ * @param {Object} attrs Extra core/query attributes.
+ * @return {string} Block markup.
+ */
+const queryLoopCarousel = ( attrs ) => {
+	const query = {
+		...attrs,
+		query: {
+			perPage: 10,
+			postType: 'post',
+			order: 'asc',
+			orderBy: 'title',
+			inherit: false,
+		},
+		switchback: {
+			enabled: true,
+			layout: { desktop: { columns: 3, step: 1, peek: 0 } },
+		},
+	};
+	return `<!-- wp:switchback-carousel/carousel --><!-- wp:query ${ JSON.stringify(
+		query
+	) } --><div class="wp-block-query"><!-- wp:post-template --><!-- wp:post-title /--><!-- /wp:post-template --></div><!-- /wp:query -->${ controls(
+		'arrows'
+	) }<!-- /wp:switchback-carousel/carousel -->`;
+};
+
 module.exports = {
 	/** Five hand-built slides, two per view, with every kind of control. */
 	manualCarousel: carousel(
@@ -43,22 +72,9 @@ module.exports = {
 		controls( 'arrows', 'pagination', 'counter', 'progress' )
 	),
 
-	/** Posts sorted by title, one slide each. */
-	queryCarousel: carousel(
-		{
-			mode: 'query',
-			query: {
-				postType: 'post',
-				limit: 10,
-				sort: { by: 'title', direction: 'asc', field: '' },
-			},
-			layout: {
-				desktop: { columns: 3, step: 1, peek: 0 },
-				tablet: {},
-				mobile: {},
-			},
-		},
-		slide( '<!-- wp:post-title /-->' ),
-		controls( 'arrows' )
-	),
+	/** A Query Loop with carousel display on: posts sorted by title. */
+	queryCarousel: queryLoopCarousel( {} ),
+
+	/** The same Query Loop owned by Advanced Query Loop's namespace. */
+	aqlCarousel: queryLoopCarousel( { namespace: 'advanced-query-loop' } ),
 };

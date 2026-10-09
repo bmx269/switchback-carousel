@@ -1,7 +1,8 @@
 /**
  * Global setup: the WordPress preset's login/state setup, then restore the
  * test site. PHPUnit reinstalls the database wp-env's test site shares, which
- * resets the active theme and plugins, so the two suites can run in any order.
+ * resets the active theme and plugins (including Advanced Query Loop, which the
+ * AQL carousel test needs), so the two suites can run in any order.
  */
 const { request } = require( '@playwright/test' );
 const { RequestUtils } = require( '@wordpress/e2e-test-utils-playwright' );
@@ -19,5 +20,6 @@ module.exports = async function globalSetup( config ) {
 
 	await requestUtils.activateTheme( 'twentytwentyfive' );
 	await requestUtils.activatePlugin( 'switchback-carousel' );
+	await requestUtils.activatePlugin( 'advanced-query-loop' );
 	await requestContext.dispose();
 };

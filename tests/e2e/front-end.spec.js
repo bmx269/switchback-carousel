@@ -2,10 +2,11 @@
  * Front-end behaviour.
  */
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const { manualCarousel, queryCarousel } = require( './fixtures' );
+const { manualCarousel, queryCarousel, aqlCarousel } = require( './fixtures' );
 
 let manualPage;
 let queryPage;
+let aqlPage;
 
 test.describe( 'Carousel on the front end', () => {
 	test.beforeAll( async ( { requestUtils } ) => {
@@ -23,6 +24,11 @@ test.describe( 'Carousel on the front end', () => {
 			title: 'Query carousel',
 			status: 'publish',
 			content: queryCarousel,
+		} );
+		aqlPage = await requestUtils.createPage( {
+			title: 'AQL carousel',
+			status: 'publish',
+			content: aqlCarousel,
 		} );
 	} );
 
@@ -77,18 +83,36 @@ test.describe( 'Carousel on the front end', () => {
 		expect( errors ).toEqual( [] );
 	} );
 
-	test( 'query carousels show one slide per post', async ( { page } ) => {
-		await page.goto( queryPage.link );
-		const titles = page.locator(
-			'.switchback-track .splide__slide:not(.splide__slide--clone) .wp-block-post-title'
-		);
-		await expect( titles ).toHaveText( [
-			'Post A',
-			'Post B',
-			'Post C',
-			'Post D',
-		] );
-	} );
+	for ( const [ name, getPage ] of [
+		[ 'Query Loop', () => queryPage ],
+		[ 'Advanced Query Loop', () => aqlPage ],
+	] ) {
+		test( `${ name } carousels show one slide per post and navigate`, async ( {
+			page,
+		} ) => {
+			const errors = [];
+			page.on( 'pageerror', ( error ) => errors.push( error.message ) );
+
+			await page.goto( getPage().link );
+			const root = page.locator( '.switchback' );
+			const track = root.locator( '.switchback-track' );
+			await expect( track ).toHaveClass( /is-ready/ );
+			await expect(
+				track.locator(
+					'.splide__slide:not(.splide__slide--clone) .wp-block-post-title'
+				)
+			).toHaveText( [ 'Post A', 'Post B', 'Post C', 'Post D' ] );
+
+			// Three per view, one per move: two positions.
+			const prev = root.getByRole( 'button', { name: 'Previous slide' } );
+			const next = root.getByRole( 'button', { name: 'Next slide' } );
+			await expect( prev ).toBeDisabled();
+			await next.click();
+			await expect( prev ).toBeEnabled();
+			await expect( next ).toBeDisabled();
+			expect( errors ).toEqual( [] );
+		} );
+	}
 
 	test.describe( 'without JavaScript', () => {
 		test.use( { javaScriptEnabled: false } );

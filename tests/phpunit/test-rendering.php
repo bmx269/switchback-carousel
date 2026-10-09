@@ -166,7 +166,7 @@ class Test_Rendering extends WP_UnitTestCase {
 			'pagination' => array( 'pagination', 'switchback-controls__pages' ),
 			'progress'   => array( 'progress', 'switchback-controls__progress-bar' ),
 			'counter'    => array( 'counter', 'switchback-controls__total' ),
-			'playpause'  => array( 'playpause', 'switchback-controls__playpause" hidden' ),
+			'playpause'  => array( 'playpause', 'switchback-controls__playpause" aria-pressed="false" hidden' ),
 		);
 	}
 
@@ -206,7 +206,15 @@ class Test_Rendering extends WP_UnitTestCase {
 
 			$blocks = parse_blocks( $pattern['content'] );
 			$this->assertSame( 'switchback-carousel/carousel', $blocks[0]['blockName'], $slug );
-			$this->assertSame( 'switchback-carousel/track', $blocks[0]['innerBlocks'][0]['blockName'], $slug );
+
+			$inner = $blocks[0]['innerBlocks'][0];
+			if ( 'latest-posts' === $slug ) {
+				// Post carousels are a Query Loop with carousel display on.
+				$this->assertSame( 'core/query', $inner['blockName'], $slug );
+				$this->assertTrue( $inner['attrs']['switchback']['enabled'], $slug );
+			} else {
+				$this->assertSame( 'switchback-carousel/track', $inner['blockName'], $slug );
+			}
 		}
 	}
 }

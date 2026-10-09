@@ -22,9 +22,10 @@ tests_add_filter(
 	'muplugins_loaded',
 	static function () {
 		$plugins = dirname( __DIR__, 3 );
-		// Secure Custom Fields, when installed (wp-env adds it), for the SCF field tests.
-		if ( file_exists( $plugins . '/secure-custom-fields/secure-custom-fields.php' ) ) {
-			require $plugins . '/secure-custom-fields/secure-custom-fields.php';
+		// Advanced Query Loop, when installed (wp-env adds it), so Query Loop
+		// carousels are tested alongside it.
+		if ( file_exists( $plugins . '/advanced-query-loop/index.php' ) ) {
+			require $plugins . '/advanced-query-loop/index.php';
 		}
 		require dirname( __DIR__, 2 ) . '/switchback-carousel.php';
 	}
