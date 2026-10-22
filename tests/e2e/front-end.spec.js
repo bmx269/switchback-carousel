@@ -2,9 +2,15 @@
  * Front-end behaviour.
  */
 const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
-const { manualCarousel, queryCarousel, aqlCarousel } = require( './fixtures' );
+const {
+	manualCarousel,
+	centeredCarousel,
+	queryCarousel,
+	aqlCarousel,
+} = require( './fixtures' );
 
 let manualPage;
+let centeredPage;
 let queryPage;
 let aqlPage;
 
@@ -19,6 +25,11 @@ test.describe( 'Carousel on the front end', () => {
 			title: 'Manual carousel',
 			status: 'publish',
 			content: manualCarousel,
+		} );
+		centeredPage = await requestUtils.createPage( {
+			title: 'Centred carousel',
+			status: 'publish',
+			content: centeredCarousel,
 		} );
 		queryPage = await requestUtils.createPage( {
 			title: 'Query carousel',
@@ -81,6 +92,44 @@ test.describe( 'Carousel on the front end', () => {
 			root.locator( '.switchback-controls__progress' )
 		).toHaveAttribute( 'role', 'slider' );
 		expect( errors ).toEqual( [] );
+	} );
+
+	test( 'a centred one-up carousel shows exactly one slide', async ( {
+		page,
+	} ) => {
+		await page.goto( centeredPage.link );
+		const root = page.locator( '.switchback' );
+		const track = root.locator( '.switchback-track' );
+		await expect( track ).toHaveClass( /is-ready/ );
+
+		// The active slide fills the viewport edge to edge, with no part of a
+		// neighbour showing, and the viewport has no native scroll offset.
+		const fit = () =>
+			track.evaluate( ( el ) => {
+				const viewport = el.querySelector( '.splide__track' );
+				const active = el.querySelector(
+					'.splide__slide.is-active:not(.splide__slide--clone)'
+				);
+				const v = viewport.getBoundingClientRect();
+				const a = active.getBoundingClientRect();
+				return {
+					scrollLeft: viewport.scrollLeft,
+					left: Math.round( a.left - v.left ),
+					right: Math.round( a.right - v.right ),
+				};
+			} );
+
+		expect( await fit() ).toEqual( { scrollLeft: 0, left: 0, right: 0 } );
+
+		await root.getByRole( 'button', { name: 'Next slide' } ).click();
+		await expect(
+			track.locator(
+				'.splide__slide.is-active:not(.splide__slide--clone)'
+			)
+		).toHaveText( 'Centred Two' );
+		await expect
+			.poll( fit )
+			.toEqual( { scrollLeft: 0, left: 0, right: 0 } );
 	} );
 
 	for ( const [ name, getPage ] of [

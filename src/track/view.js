@@ -79,11 +79,19 @@ class Carousel {
 			slide.classList.add( 'splide__slide' )
 		);
 
+		// Leave the no-JS scrolling row before Splide measures anything. While
+		// the track is still a snapping scroller, inserting loop clones and
+		// moving the list makes the browser scroll it natively, and that offset
+		// survives the switch to overflow: hidden. Splide positions slides with
+		// transforms alone, so a leftover scrollLeft shows part of the
+		// neighbouring slide (with focus: center, about a fifth of a slide).
+		track.classList.add( 'is-ready' );
+
 		const options = { ...this.config.splide, i18n: SPLIDE_I18N };
 		this.splide = new Splide( track, options );
 		this.fitMinimumWidth();
 		this.splide.mount( options.autoScroll ? { AutoScroll } : {} );
-		track.classList.add( 'is-ready' );
+		this.pinScroll();
 		// The track itself takes focus, so arrow keys work even when no slide
 		// contains a link or button.
 		if ( ! track.hasAttribute( 'tabindex' ) ) {
@@ -104,6 +112,21 @@ class Carousel {
 		this.teardown.push( () =>
 			target.removeEventListener( event, handler, options )
 		);
+	}
+
+	/**
+	 * Keep the viewport's native scroll at zero. A browser still scrolls an
+	 * overflow: hidden box to reveal focused content, e.g. tabbing to a link in
+	 * an off-screen slide, which would shift every slide out of place.
+	 */
+	pinScroll() {
+		const viewport = this.splide.Components.Elements.track;
+		const reset = () => {
+			viewport.scrollLeft = 0;
+			viewport.scrollTop = 0;
+		};
+		reset();
+		this.on( viewport, 'scroll', reset, { passive: true } );
 	}
 
 	/** Fewer columns when slides would get narrower than the minimum width. */

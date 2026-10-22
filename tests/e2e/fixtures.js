@@ -72,6 +72,23 @@ module.exports = {
 		controls( 'arrows', 'pagination', 'counter', 'progress' )
 	),
 
+	/** One slide per view, centred and looping: a gallery slideshow. */
+	centeredCarousel: carousel(
+		{
+			layout: {
+				desktop: { columns: 1, step: 1, peek: 0 },
+				tablet: {},
+				mobile: { columns: 1, step: 1, peek: 0 },
+			},
+			focus: 'center',
+			motion: { loop: 'loop' },
+		},
+		[ 'One', 'Two', 'Three', 'Four' ]
+			.map( ( text ) => slide( paragraph( `Centred ${ text }` ) ) )
+			.join( '' ),
+		controls( 'arrows' )
+	),
+
 	/** A Query Loop with carousel display on: posts sorted by title. */
 	queryCarousel: queryLoopCarousel( {} ),
 
