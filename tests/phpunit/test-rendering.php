@@ -217,4 +217,34 @@ class Test_Rendering extends WP_UnitTestCase {
 			}
 		}
 	}
+
+	public function test_lazy_images_defer_later_slides_to_splide() {
+		$img    = static fn( int $n ) => '<!-- wp:html --><img src="/a' . $n . '.jpg" srcset="/a' . $n . '.jpg 1x, /a' . $n . '@2x.jpg 2x" loading="lazy" alt=""><!-- /wp:html -->';
+		$slides = $this->slide( $img( 1 ) ) . $this->slide( $img( 2 ) ) . $this->slide( $img( 3 ) );
+		$html   = $this->track(
+			array(
+				'lazyImages' => true,
+				'layout'     => array( 'desktop' => array( 'columns' => 1 ) ),
+			),
+			$slides
+		);
+
+		$this->assertSame( 'nearby', $this->config( $html )['splide']['lazyLoad'] );
+
+		$tags = new WP_HTML_Tag_Processor( $html );
+		$seen = array();
+		while ( $tags->next_tag( 'IMG' ) ) {
+			$seen[] = array( $tags->get_attribute( 'src' ), $tags->get_attribute( 'data-splide-lazy' ), $tags->get_attribute( 'data-splide-lazy-srcset' ), $tags->get_attribute( 'loading' ) );
+		}
+		// The first page's image loads with the page; later ones wait for Splide.
+		$this->assertSame( array( '/a1.jpg', null, null, 'lazy' ), $seen[0] );
+		$this->assertSame( array( null, '/a2.jpg', '/a2.jpg 1x, /a2@2x.jpg 2x', null ), $seen[1] );
+		$this->assertSame( array( null, '/a3.jpg', '/a3.jpg 1x, /a3@2x.jpg 2x', null ), $seen[2] );
+	}
+
+	public function test_lazy_images_are_off_by_default() {
+		$html = $this->track( array(), $this->slide( '<!-- wp:html --><img src="/a.jpg" alt=""><!-- /wp:html -->' ) . $this->slide( '<!-- wp:html --><img src="/b.jpg" alt=""><!-- /wp:html -->' ) );
+		$this->assertArrayNotHasKey( 'lazyLoad', $this->config( $html )['splide'] );
+		$this->assertStringNotContainsString( 'data-splide-lazy', $html );
+	}
 }

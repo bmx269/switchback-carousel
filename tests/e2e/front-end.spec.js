@@ -5,12 +5,14 @@ const { test, expect } = require( '@wordpress/e2e-test-utils-playwright' );
 const {
 	manualCarousel,
 	centeredCarousel,
+	lazyCarousel,
 	queryCarousel,
 	aqlCarousel,
 } = require( './fixtures' );
 
 let manualPage;
 let centeredPage;
+let lazyPage;
 let queryPage;
 let aqlPage;
 
@@ -30,6 +32,11 @@ test.describe( 'Carousel on the front end', () => {
 			title: 'Centred carousel',
 			status: 'publish',
 			content: centeredCarousel,
+		} );
+		lazyPage = await requestUtils.createPage( {
+			title: 'Lazy carousel',
+			status: 'publish',
+			content: lazyCarousel,
 		} );
 		queryPage = await requestUtils.createPage( {
 			title: 'Query carousel',
@@ -130,6 +137,39 @@ test.describe( 'Carousel on the front end', () => {
 		await expect
 			.poll( fit )
 			.toEqual( { scrollLeft: 0, left: 0, right: 0 } );
+	} );
+
+	test( 'lazy images load as the carousel reaches them', async ( {
+		page,
+	} ) => {
+		const requested = new Set();
+		page.on( 'request', ( request ) => {
+			const slide = new URL( request.url() ).searchParams.get( 'slide' );
+			if ( slide ) {
+				requested.add( Number( slide ) );
+			}
+		} );
+
+		await page.goto( lazyPage.link );
+		const root = page.locator( '.switchback' );
+		await expect( root.locator( '.switchback-track' ) ).toHaveClass(
+			/is-ready/
+		);
+		await page.waitForLoadState( 'networkidle' );
+
+		// The first slide and its neighbour load; the far slides wait.
+		expect( requested.has( 1 ) ).toBe( true );
+		expect( requested.has( 5 ) ).toBe( false );
+		expect( requested.has( 6 ) ).toBe( false );
+
+		const next = root.getByRole( 'button', { name: 'Next slide' } );
+		for ( let i = 0; i < 4; i++ ) {
+			await next.click();
+		}
+		await expect.poll( () => requested.has( 6 ) ).toBe( true );
+		await expect(
+			root.getByRole( 'img', { name: 'Slide 5' } )
+		).toHaveAttribute( 'src', /slide=5/ );
 	} );
 
 	for ( const [ name, getPage ] of [

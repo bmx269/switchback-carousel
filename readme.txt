@@ -4,7 +4,7 @@ Tags: carousel, slider, slideshow, posts carousel, blocks
 Requires at least: 6.7
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,10 @@ The carousel follows the WAI-ARIA carousel pattern through Splide: slides are la
 6. Layout per device: slides side by side, slides per move and a peek at the next slide.
 
 == Changelog ==
+
+= 1.1.0 =
+* New: "Lazy-load images" track setting. Images in later slides load as the carousel reaches them instead of with the page.
+* Fix: a centred one-up carousel no longer shows part of the next slide. The no-JS scrolling row now switches off before Splide mounts, and the track's native scroll stays at zero.
 
 = 1.0.0 =
 * Initial release.

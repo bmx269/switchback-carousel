@@ -125,6 +125,7 @@ export default function Inspector( { attributes, setAttributes } ) {
 		edges,
 		direction,
 		linkedLayout,
+		lazyImages,
 	} = attributes;
 	const fade = 'fade' === motion.transition;
 
@@ -155,6 +156,18 @@ export default function Inspector( { attributes, setAttributes } ) {
 					checked={ linkedLayout }
 					onChange={ ( value ) =>
 						setAttributes( { linkedLayout: value } )
+					}
+				/>
+				<ToggleControl
+					__nextHasNoMarginBottom
+					label={ __( 'Lazy-load images', 'switchback-carousel' ) }
+					help={ __(
+						'Images in later slides load as the carousel reaches them, not with the page. Without JavaScript they don’t load.',
+						'switchback-carousel'
+					) }
+					checked={ lazyImages }
+					onChange={ ( value ) =>
+						setAttributes( { lazyImages: value } )
 					}
 				/>
 			</PanelBody>

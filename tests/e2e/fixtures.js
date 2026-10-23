@@ -89,6 +89,26 @@ module.exports = {
 		controls( 'arrows' )
 	),
 
+	/** Six one-up image slides with lazy-loaded images. */
+	lazyCarousel: carousel(
+		{
+			layout: {
+				desktop: { columns: 1, step: 1, peek: 0 },
+				tablet: {},
+				mobile: { columns: 1, step: 1, peek: 0 },
+			},
+			lazyImages: true,
+		},
+		[ 1, 2, 3, 4, 5, 6 ]
+			.map( ( n ) =>
+				slide(
+					`<!-- wp:html --><img src="/wp-includes/images/w-logo-blue.png?slide=${ n }" width="80" height="80" alt="Slide ${ n }"><!-- /wp:html -->`
+				)
+			)
+			.join( '' ),
+		controls( 'arrows' )
+	),
+
 	/** A Query Loop with carousel display on: posts sorted by title. */
 	queryCarousel: queryLoopCarousel( {} ),
 

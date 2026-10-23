@@ -3,7 +3,7 @@
  * Plugin Name:       Switchback Carousel
  * Plugin URI:        https://github.com/bmx269/switchback-carousel
  * Description:       Carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel. Works with Advanced Query Loop. Built on Splide.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.7
  * Requires PHP:      8.0
  * Author:            Trent Stromkins

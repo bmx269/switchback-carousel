@@ -89,6 +89,10 @@
 		"linkedLayout": {
 			"type": "boolean",
 			"default": false
+		},
+		"lazyImages": {
+			"type": "boolean",
+			"default": false
 		}
 	},
 	"supports": {

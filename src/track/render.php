@@ -16,6 +16,7 @@
 use function SwitchbackCarousel\bounded_float;
 use function SwitchbackCarousel\bounded_int;
 use function SwitchbackCarousel\horizontal_gap;
+use function SwitchbackCarousel\lazy_slide_images;
 use function SwitchbackCarousel\one_of;
 
 defined( 'ABSPATH' ) || exit;
@@ -126,6 +127,13 @@ if ( $switchback_carousel_autoplays && ! $switchback_carousel_interval ) {
 	$switchback_carousel_options['drag']       = 'free';
 }
 
+// Lazy-loaded images: Splide fills in later slides' images as they near the view.
+$switchback_carousel_slides = $content;
+if ( ! empty( $attributes['lazyImages'] ) ) {
+	$switchback_carousel_options['lazyLoad'] = 'nearby';
+	$switchback_carousel_slides              = lazy_slide_images( $content, (int) $switchback_carousel_options['perPage'] );
+}
+
 $switchback_carousel_config = array(
 	'splide'   => $switchback_carousel_options,
 	'minWidth' => bounded_int( $switchback_carousel_width['min'] ?? 0, 0, 800, 0 ),
@@ -166,5 +174,5 @@ printf(
 			'data-switchback' => wp_json_encode( $switchback_carousel_config ),
 		)
 	),
-	$content // phpcs:ignore WordPress.Security.EscapeOutput -- rendered blocks.
+	$switchback_carousel_slides // phpcs:ignore WordPress.Security.EscapeOutput -- rendered blocks.
 );
