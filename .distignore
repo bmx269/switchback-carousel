@@ -15,6 +15,7 @@
 /tests
 /src/**/test
 /scripts
+/playground
 /artifacts
 .build-tmp
 

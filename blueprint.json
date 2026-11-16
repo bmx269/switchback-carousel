@@ -1,6 +1,12 @@
 {
 	"$schema": "https://playground.wordpress.net/blueprint-schema.json",
-	"landingPage": "/switchback-demo/",
+	"meta": {
+		"title": "Switchback Carousel showcase",
+		"description": "Sample posts and events, plus a front page of carousels built with Switchback Carousel and Advanced Query Loop.",
+		"author": "bmx269",
+		"categories": [ "Blocks" ]
+	},
+	"landingPage": "/",
 	"preferredVersions": {
 		"wp": "latest",
 		"php": "8.3"
@@ -8,25 +14,133 @@
 	"features": {
 		"networking": true
 	},
+	"login": true,
 	"steps": [
 		{
-			"step": "installPlugin",
-			"pluginData": {
-				"resource": "wordpress.org/plugins",
-				"slug": "switchback-carousel"
+			"step": "installTheme",
+			"themeData": {
+				"resource": "wordpress.org/themes",
+				"slug": "twentytwentyfive"
 			},
 			"options": {
 				"activate": true
 			}
 		},
 		{
-			"step": "login",
-			"username": "admin",
-			"password": "password"
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/playground/switchback-carousel.zip"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "installPlugin",
+			"pluginData": {
+				"resource": "wordpress.org/plugins",
+				"slug": "advanced-query-loop"
+			},
+			"options": {
+				"activate": true
+			}
+		},
+		{
+			"step": "mkdir",
+			"path": "/wordpress/wp-content/switchback-demo/images"
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/setup.php",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/setup.php"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-1.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-1.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-2.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-2.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-3.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-3.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-4.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-4.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-5.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-5.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-6.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-6.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-7.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-7.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-8.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-8.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-9.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-9.jpg"
+			}
+		},
+		{
+			"step": "writeFile",
+			"path": "/wordpress/wp-content/switchback-demo/images/scene-10.jpg",
+			"data": {
+				"resource": "url",
+				"url": "https://raw.githubusercontent.com/bmx269/switchback-carousel/main/playground/images/scene-10.jpg"
+			}
 		},
 		{
 			"step": "runPHP",
-			"code": "<?php require '/wordpress/wp-load.php'; $registry = WP_Block_Patterns_Registry::get_instance(); $content = ''; foreach ( array( 'feature-cards', 'quote-rotator', 'gallery-strip', 'logo-marquee' ) as $slug ) { $pattern = $registry->get_registered( 'switchback-carousel/' . $slug ); if ( $pattern ) { $content .= '<!-- wp:heading --><h2 class=\"wp-block-heading\">' . esc_html( $pattern['title'] ) . '</h2><!-- /wp:heading -->' . $pattern['content']; } } wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Switchback Carousel demo', 'post_name' => 'switchback-demo', 'post_content' => $content ) );"
+			"code": "<?php require '/wordpress/wp-load.php'; require WP_CONTENT_DIR . '/switchback-demo/setup.php';"
 		}
 	]
 }

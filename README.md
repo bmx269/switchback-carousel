@@ -1,6 +1,25 @@
 # Switchback Carousel
 
+![Switchback Carousel](.wordpress-org/banner-1544x500.png)
+
 Carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel, including one powered by [Advanced Query Loop](https://wordpress.org/plugins/advanced-query-loop/). Sliding is powered by [Splide](https://splidejs.com/).
+
+## Try it in WordPress Playground
+
+No installation needed. Both links load [blueprint.json](blueprint.json), which installs Switchback Carousel, Advanced Query Loop and Twenty Twenty-Five, adds sample trail notes and events, and builds a showcase front page:
+
+- **[See the showcase](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/bmx269/switchback-carousel/main/blueprint.json)**: a full-width fading hero, hand-built feature cards, a Query Loop carousel, Advanced Query Loop carousels filtered by a meta field and by `{today_ymd}`, split slides with controls inside them, a quote rotator, a centred gallery and a logo marquee.
+- **[Open it in the editor](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/bmx269/switchback-carousel/main/blueprint.json&url=%2Fwp-admin%2Fpost.php%3Fpost%3D1000%26action%3Dedit)**: the same page in the block editor, logged in as admin.
+
+The demo content lives in [playground/setup.php](playground/setup.php). Playground installs the plugin from a zip on the `playground` branch, which [.github/workflows/playground.yml](.github/workflows/playground.yml) rebuilds on every push to `main`.
+
+## Screenshots
+
+| | |
+|---|---|
+| [![A posts carousel on the front end](.wordpress-org/screenshot-1.png)](.wordpress-org/screenshot-1.png)<br>A posts carousel on the front end, with arrows over the slides. | [![Query Loop carousel settings](.wordpress-org/screenshot-2.png)](.wordpress-org/screenshot-2.png)<br>A Query Loop shown as a carousel: turn on **Display as carousel** and set columns, motion and edges in the block sidebar. |
+| [![Advanced Query Loop meta query](.wordpress-org/screenshot-3.png)](.wordpress-org/screenshot-3.png)<br>Filtering the same carousel with Advanced Query Loop's meta query: hikes longer than ten kilometres. | [![Feature cards and quote rotator](.wordpress-org/screenshot-4.png)](.wordpress-org/screenshot-4.png)<br>Feature cards and a fading quote rotator with pagination and a pause button. |
+| [![Carousel controls](.wordpress-org/screenshot-5.png)](.wordpress-org/screenshot-5.png)<br>Controls: arrows in seven icons and five weights, pagination, progress, counter and play/pause. | [![Layout per device](.wordpress-org/screenshot-6.png)](.wordpress-org/screenshot-6.png)<br>Layout per device: slides side by side, slides per move and a peek at the next slide. |
 
 ## Blocks
 
