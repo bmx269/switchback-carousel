@@ -43,6 +43,7 @@ In AQL's meta query values, use relative dates like `{today}`, `{today+7}` or `{
 Carousels are easy to get wrong for keyboard, screen reader and motion-sensitive visitors. Switchback is built on Splide, which follows the WAI-ARIA carousel pattern, and handles its own controls the same way. Nothing needs switching on.
 
 * Carousel and slide semantics, with each slide labelled by position ("3 of 8")
+* Each carousel is named after its heading, or a name you set, so screen reader users can tell several apart
 * Slides out of view are hidden from screen readers, and their links leave the Tab order until they scroll into view
 * A polite live region announces each new slide, and goes quiet during autoplay so it doesn't interrupt
 * Arrow keys move the focused carousel; the track itself takes focus, with a visible outline
@@ -95,7 +96,7 @@ Yes. Without JavaScript the slides show as a row you can scroll sideways, so no 
 
 Yes, accessibility is built in rather than an option. The carousel follows the WAI-ARIA carousel pattern through Splide: slides are labelled by position, off-screen slides stay out of the Tab order and away from screen readers, a live region announces moves, and arrow keys work when the carousel has focus. Switchback's own controls are real, labelled buttons, and all autoplay, continuous included, stays paused for visitors who prefer reduced motion.
 
-The content is still yours: give images alt text, keep text over images readable, and add a Play/pause control to any carousel that autoplays, so visitors can stop the motion (WCAG 2.2.2).
+The content is still yours: give each carousel a heading or a Carousel name, give images alt text, keep text over images readable, and add a Play/pause control to any carousel that autoplays, so visitors can stop the motion (WCAG 2.2.2).
 
 == Screenshots ==
 
@@ -110,7 +111,13 @@ The content is still yours: give images alt text, keep text over images readable
 
 = 1.1.0 =
 * New: "Lazy-load images" track setting. Images in later slides load as the carousel reaches them instead of with the page.
-* Fix: a centred one-up carousel no longer shows part of the next slide. The no-JS scrolling row now switches off before Splide mounts, and the track's native scroll stays at zero.
+* New: "Carousel name" setting in the Switchback Carousel block's Accessibility panel. Without it, each carousel is named after its heading, so screen readers no longer announce every carousel on a page as just "Carousel".
+* Accessibility: continuous autoplay (Auto Scroll) now stays paused for visitors who prefer reduced motion, like step-by-step autoplay already did. The Play button still starts it.
+* Accessibility: the play/pause button no longer reports itself as "pressed". Its label alone says what it will do.
+* Fix: a carousel set to let slides spill past the edge no longer makes the page scroll sideways.
+* Fix: full-width and wide blocks inside a slide, such as a Cover, keep their alignment in the editor instead of shrinking to the content width.
+* Fix: the progress bar track stays visible in browsers without color-mix().
+* Development: stylesheets are now native nested CSS, flattened at build time with postcss-nesting, instead of Sass.
 
 = 1.0.0 =
 * Initial release.
