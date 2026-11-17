@@ -1,6 +1,9 @@
 /**
  * Switchback Carousel styles (front end and editor), loaded once.
  *
+ * Written with native CSS nesting; postcss-nesting (postcss.config.js)
+ * flattens it at build time so older browsers get plain selectors.
+ *
  * Structural rules Splide needs are included here rather than Splide's own
  * stylesheet, which hides carousels until JavaScript runs. Without JS, a
  * track is a native horizontally scrolling row.
@@ -327,6 +330,9 @@ html:has(.switchback-track.has-visible-overflow.is-ready) body {
 	min-width: 4rem;
 	height: var(--switchback-control-size);
 	border-radius: 999px;
+
+	/* Fallback for browsers without color-mix(). */
+	background: rgb(128 128 128 / 25%);
 	background: color-mix(in srgb, currentcolor 18%, transparent);
 	cursor: pointer;
 	touch-action: none;

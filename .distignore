@@ -32,6 +32,7 @@ composer.lock
 phpcs.xml.dist
 phpunit.xml.dist
 playwright.config.js
+postcss.config.js
 package-lock.json
 blueprint.json
 deploy.sh

@@ -9,7 +9,7 @@
     "build": "npm run build:icons && wp-scripts build",
     "start": "wp-scripts start",
     "lint:js": "wp-scripts lint-js ./src ./tests playwright.config.js",
-    "lint:css": "wp-scripts lint-style './src/**/*.scss'",
+    "lint:css": "wp-scripts lint-style './src/**/*.css'",
     "test:unit": "wp-scripts test-unit-js",
     "plugin-zip": "npm run build && wp-scripts plugin-zip",
     "update-pot": "wp i18n make-pot . languages/switchback-carousel.pot --exclude=build,node_modules",
@@ -50,7 +50,8 @@
     "@playwright/test": "^1.63.0",
     "@wordpress/e2e-test-utils-playwright": "^2.1.0",
     "@wordpress/env": "^11.16.0",
-    "@wordpress/scripts": "^35.0.0"
+    "@wordpress/scripts": "^35.0.0",
+    "postcss-nesting": "^13.0.2"
   },
   "homepage": "https://github.com/bmx269/switchback-carousel",
   "repository": {

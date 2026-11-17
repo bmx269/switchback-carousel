@@ -14,8 +14,8 @@ import {
 import { PanelBody, ToggleControl } from '@wordpress/components';
 
 import metadata from './block.json';
-import './style.scss';
-import './editor.scss';
+import './style.css';
+import './editor.css';
 
 const slide = [
 	'switchback-carousel/slide',
