@@ -125,7 +125,7 @@ switch ( $switchback_carousel_control ) {
 		// hidden and view.js keeps it hidden too.
 		$switchback_carousel_hidden = $switchback_carousel_autoplay ? '' : ' hidden';
 		$switchback_carousel_markup = sprintf(
-			'<div class="wp-block-button"><button type="button" class="wp-block-button__link wp-element-button switchback-controls__playpause" aria-pressed="false"%2$s>%1$s</button></div>',
+			'<div class="wp-block-button"><button type="button" class="wp-block-button__link wp-element-button switchback-controls__playpause"%2$s>%1$s</button></div>',
 			esc_html__( 'Pause', 'switchback-carousel' ),
 			$switchback_carousel_hidden
 		);

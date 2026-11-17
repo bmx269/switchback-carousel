@@ -88,9 +88,23 @@ class Carousel {
 		track.classList.add( 'is-ready' );
 
 		const options = { ...this.config.splide, i18n: SPLIDE_I18N };
+		// Splide's reducedMotion option pauses its own autoplay, but the
+		// AutoScroll extension ignores it: hold a continuous flow still for
+		// visitors who prefer reduced motion. The play button still starts it.
+		const reduced = window.matchMedia?.( '(prefers-reduced-motion: reduce)' );
+		if ( options.autoScroll && reduced?.matches ) {
+			options.autoScroll = { ...options.autoScroll, autoStart: false };
+		}
 		this.splide = new Splide( track, options );
 		this.fitMinimumWidth();
 		this.splide.mount( options.autoScroll ? { AutoScroll } : {} );
+		if ( options.autoScroll && reduced ) {
+			this.on( reduced, 'change', ( event ) => {
+				if ( event.matches ) {
+					this.splide.Components.AutoScroll?.pause();
+				}
+			} );
+		}
 		this.pinScroll();
 		// The track itself takes focus, so arrow keys work even when no slide
 		// contains a link or button.
@@ -363,11 +377,14 @@ class Carousel {
 		if ( ! buttons.length || ! player ) {
 			return;
 		}
+		// The label says what the button does next. No aria-pressed: a toggle
+		// whose label also changes reads as "Play, pressed" (ARIA carousel
+		// pattern: change the label, not the state).
 		const label = () =>
 			buttons.forEach( ( button ) => {
-				const paused = player.isPaused();
-				button.textContent = paused ? STRINGS.play : STRINGS.pause;
-				button.setAttribute( 'aria-pressed', String( paused ) );
+				button.textContent = player.isPaused()
+					? STRINGS.play
+					: STRINGS.pause;
 			} );
 		buttons.forEach( ( button ) => {
 			button.hidden = false;

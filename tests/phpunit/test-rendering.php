@@ -166,7 +166,7 @@ class Test_Rendering extends WP_UnitTestCase {
 			'pagination' => array( 'pagination', 'switchback-controls__pages' ),
 			'progress'   => array( 'progress', 'switchback-controls__progress-bar' ),
 			'counter'    => array( 'counter', 'switchback-controls__total' ),
-			'playpause'  => array( 'playpause', 'switchback-controls__playpause" aria-pressed="false" hidden' ),
+			'playpause'  => array( 'playpause', 'switchback-controls__playpause" hidden' ),
 		);
 	}
 
