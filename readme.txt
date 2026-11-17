@@ -8,7 +8,7 @@ Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel. Works with Advanced Query Loop.
+Accessible carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel. Works with Advanced Query Loop.
 
 == Description ==
 
@@ -40,10 +40,17 @@ In AQL's meta query values, use relative dates like `{today}`, `{today+7}` or `{
 
 = Accessible by default =
 
-* Carousel and slide semantics with labelled slides ("3 of 8") and live announcements
-* Arrow-key navigation on the focused carousel
-* Real buttons with disabled states at the ends, and a play/pause control for autoplay
-* Autoplay pauses while a visitor focuses the carousel and stays off for visitors who prefer reduced motion
+Carousels are easy to get wrong for keyboard, screen reader and motion-sensitive visitors. Switchback is built on Splide, which follows the WAI-ARIA carousel pattern, and handles its own controls the same way. Nothing needs switching on.
+
+* Carousel and slide semantics, with each slide labelled by position ("3 of 8")
+* Slides out of view are hidden from screen readers, and their links leave the Tab order until they scroll into view
+* A polite live region announces each new slide, and goes quiet during autoplay so it doesn't interrupt
+* Arrow keys move the focused carousel; the track itself takes focus, with a visible outline
+* Arrows, pagination and play/pause are real, labelled buttons; arrows are disabled at the ends, and the current page is marked
+* The progress bar is a labelled slider that works with the arrow keys, and the counter reads "2 of 6"
+* Autoplay pauses while focus is inside the carousel, and optionally on hover
+* Reduced motion respected: instant transitions, and both step-by-step and continuous autoplay stay paused until the visitor presses Play
+* Every label is translatable
 * Without JavaScript, slides remain a native scrollable row instead of disappearing
 
 = For developers =
@@ -86,7 +93,9 @@ Yes. Without JavaScript the slides show as a row you can scroll sideways, so no 
 
 = Is it accessible? =
 
-The carousel follows the WAI-ARIA carousel pattern through Splide: slides are labelled, the carousel responds to arrow keys when focused, controls are real buttons, autoplay pauses on focus and for reduced-motion users, and a play/pause control is available.
+Yes, accessibility is built in rather than an option. The carousel follows the WAI-ARIA carousel pattern through Splide: slides are labelled by position, off-screen slides stay out of the Tab order and away from screen readers, a live region announces moves, and arrow keys work when the carousel has focus. Switchback's own controls are real, labelled buttons, and all autoplay, continuous included, stays paused for visitors who prefer reduced motion.
+
+The content is still yours: give images alt text, keep text over images readable, and add a Play/pause control to any carousel that autoplays, so visitors can stop the motion (WCAG 2.2.2).
 
 == Screenshots ==
 

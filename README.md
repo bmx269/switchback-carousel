@@ -1,8 +1,8 @@
 # Switchback Carousel
 
-![Switchback Carousel](.wordpress-org/banner-1544x500.png)
+![Switchback Carousel: accessible carousel blocks for WordPress, any blocks, any posts. Keyboard ready, screen reader friendly, respects reduced motion.](.wordpress-org/banner-1544x500.png)
 
-Carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel, including one powered by [Advanced Query Loop](https://wordpress.org/plugins/advanced-query-loop/). Sliding is powered by [Splide](https://splidejs.com/).
+Accessible carousel blocks for WordPress. Build slides by hand, or turn any Query Loop into a carousel, including one powered by [Advanced Query Loop](https://wordpress.org/plugins/advanced-query-loop/). Sliding is powered by [Splide](https://splidejs.com/).
 
 ## Try it in WordPress Playground
 
@@ -41,8 +41,42 @@ Saved content never contains Splide class names. The front-end script adds them 
 - **Autoplay**: step by step or a continuous flow; pause on hover. Always pauses while a visitor focuses the carousel and for visitors who prefer reduced motion.
 - **Edges**: let slides show past the track edge (for full-bleed layouts), fade both edges or the trailing edge.
 - **Linked layout**: rearranging or restyling one hand-built slide updates the others while each keeps its content. Each slide also has **Copy layout to other slides**.
-- **Accessibility**: Splide's carousel semantics and live announcements, labelled slides ("3 of 8"), a focusable track that responds to arrow keys, disabled states at the ends, a real play/pause control, and visible focus styles.
+- **Accessibility**: built in, with nothing to switch on. See [Accessibility](#accessibility).
 - **Without JavaScript** the slides remain a native horizontally scrolling row.
+
+## Accessibility
+
+Carousels are easy to get wrong for keyboard, screen reader and motion-sensitive visitors. Switchback sits on [Splide](https://splidejs.com/), which follows the [WAI-ARIA carousel pattern](https://www.w3.org/WAI/ARIA/apg/patterns/carousel/), and handles the controls it renders itself. None of it needs configuring.
+
+### From Splide
+
+- **Carousel semantics.** The track is a labelled region with `aria-roledescription="carousel"`, and each slide is a group with `aria-roledescription="slide"` and a position label such as "3 of 8".
+- **Hidden slides stay out of the way.** Slides outside the view get `aria-hidden="true"`, and links and buttons inside them get `tabindex="-1"` until they scroll into view, so Tab only reaches what's on screen.
+- **Live announcements.** A polite live region announces the new slide after a move. It turns off while autoplay runs, so screen readers aren't interrupted every few seconds.
+- **Keyboard.** Left and right arrow keys move the carousel while it has focus, following the text direction in right-to-left languages.
+- **Autoplay that gets out of the way.** Autoplay pauses whenever focus is inside the carousel, and on hover if **Pause while the pointer is over it** is on.
+- **Reduced motion.** For visitors with `prefers-reduced-motion: reduce`, transitions are instant and step-by-step autoplay stays paused.
+
+### Added by Switchback
+
+- **A focusable track.** The track takes focus itself (`tabindex="0"`), so arrow keys work even when the slides contain nothing focusable, and it shows a visible focus outline.
+- **Continuous autoplay respects reduced motion too.** Splide's reduced-motion setting doesn't cover its Auto Scroll extension, so Switchback holds continuous carousels (logo marquees) still for those visitors. They can still start one with the Play button.
+- **Real buttons with labels.** Previous and next arrows are `<button>`s labelled "Previous slide" and "Next slide", and their icons are hidden from screen readers. Without looping, they're disabled at the first and last slide.
+- **Pagination.** A list labelled "Choose a slide" of buttons labelled "Go to slide 3" (or "Go to page 3" when a move covers several slides). The current one has `aria-current`.
+- **Progress bar.** A labelled slider (`role="slider"`, 0–100) that works with a click, a drag or the arrow keys.
+- **Counter.** Reads "2 of 6". The visual slash is hidden from screen readers.
+- **Play/pause.** A real button that appears only when autoplay is on. Its label says what it will do next ("Pause" or "Play"), as the WAI-ARIA carousel pattern recommends.
+- **Visible focus** on every control, using the text colour so it follows your design.
+- **No JavaScript, no lost content.** Before the script loads, or if it never does, the slides are a native horizontally scrolling row.
+- **Translatable.** Every label goes through WordPress translations.
+
+### Your part
+
+Switchback handles the carousel. The content inside it is yours:
+
+- Give images in slides alt text, or mark them decorative.
+- Keep text on images readable: a Cover block's overlay helps with contrast.
+- Add a **Play/pause** control to any carousel that autoplays. [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) asks for a way to stop motion that lasts more than five seconds. Pausing on focus and hover helps, but doesn't replace the button.
 
 ## Carousels from posts
 
