@@ -10,6 +10,15 @@
 	position: relative;
 }
 
+/* Slides that spill past the track edge stop at the screen edge instead of
+ * widening the page. `clip` rather than `hidden` keeps sticky headers
+ * working, and setting it on html too makes body clip itself rather than
+ * pass the value to the viewport (which older iOS Safari ignores). */
+html:has(.switchback-track.has-visible-overflow.is-ready),
+html:has(.switchback-track.has-visible-overflow.is-ready) body {
+	overflow-x: clip;
+}
+
 /* Track ------------------------------------------------------------------- */
 
 .switchback-track {
