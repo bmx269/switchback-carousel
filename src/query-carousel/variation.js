@@ -18,6 +18,12 @@ import { createHigherOrderComponent } from '@wordpress/compose';
 import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
+import {
+	layoutFor,
+	storedLayouts,
+	writeDeviceLayout,
+} from '../shared/responsive';
+
 export const QUERY_NAMESPACE = 'switchback-carousel/query-carousel';
 
 const DEFAULT_SWITCHBACK = {
@@ -167,6 +173,20 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 		setAttributes( {
 			switchback: mergeSwitchback( sb, path, value ),
 		} );
+	// Per-device columns go through the shared layout adapter, which picks
+	// legacy `switchback.layout` or core responsive `style` storage.
+	const stored = storedLayouts( sb.layout, attributes.style );
+	const setColumns = ( key, columns ) => {
+		const next = writeDeviceLayout(
+			{ layout: sb.layout, style: attributes.style },
+			key,
+			{ columns }
+		);
+		setAttributes( {
+			switchback: mergeSwitchback( sb, [ 'layout' ], next.layout ),
+			style: next.style,
+		} );
+	};
 
 	return (
 		<InspectorControls>
@@ -223,15 +243,9 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							) }
 							min={ 1 }
 							max={ 8 }
-							value={ sb.layout?.desktop?.columns ?? 3 }
+							value={ stored.desktop.columns ?? 3 }
 							onChange={ ( columns ) =>
-								set( [ 'layout' ], {
-									...sb.layout,
-									desktop: {
-										...( sb.layout?.desktop || {} ),
-										columns,
-									},
-								} )
+								setColumns( 'desktop', columns )
 							}
 						/>
 						<RangeControl
@@ -242,15 +256,9 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							min={ 1 }
 							max={ 8 }
 							allowReset
-							value={ sb.layout?.tablet?.columns }
+							value={ stored.tablet.columns }
 							onChange={ ( columns ) =>
-								set( [ 'layout' ], {
-									...sb.layout,
-									tablet: {
-										...( sb.layout?.tablet || {} ),
-										columns,
-									},
-								} )
+								setColumns( 'tablet', columns )
 							}
 						/>
 						<RangeControl
@@ -260,15 +268,9 @@ const CarouselPanel = ( { attributes, setAttributes } ) => {
 							) }
 							min={ 1 }
 							max={ 4 }
-							value={ sb.layout?.mobile?.columns ?? 1 }
+							value={ stored.mobile.columns ?? 1 }
 							onChange={ ( columns ) =>
-								set( [ 'layout' ], {
-									...sb.layout,
-									mobile: {
-										...( sb.layout?.mobile || {} ),
-										columns,
-									},
-								} )
+								setColumns( 'mobile', columns )
 							}
 						/>
 					</>
@@ -447,9 +449,12 @@ const withCarouselPreviewClass = createHigherOrderComponent(
 		}
 		const sb = props.attributes.switchback;
 		const fluid = !! sb.layout?.fluid;
-		const desktop = sb.layout?.desktop?.columns ?? 3;
-		const tablet = sb.layout?.tablet?.columns ?? desktop;
-		const mobile = sb.layout?.mobile?.columns ?? 1;
+		const columnsFor = ( device ) =>
+			layoutFor( sb.layout, device, false, props.attributes.style )
+				.columns;
+		const desktop = columnsFor( 'Desktop' );
+		const tablet = columnsFor( 'Tablet' );
+		const mobile = columnsFor( 'Mobile' );
 		const minWidth = sb.slideWidth?.min ?? 240;
 		const gap = gapToCss( props.attributes?.style?.spacing?.blockGap );
 		const className = [

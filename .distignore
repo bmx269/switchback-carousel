@@ -17,6 +17,7 @@
 /scripts
 /playground
 /artifacts
+/docs
 .build-tmp
 
 # Config and tooling

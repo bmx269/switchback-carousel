@@ -72,6 +72,7 @@
 	--switchback-gap: 1.5rem;
 	--switchback-columns-active: var(--switchback-columns-desktop, var(--switchback-columns, 3));
 
+	/* responsive-switch: matches LEGACY_BREAKPOINTS in includes/responsive.php. */
 	@media (max-width: 781px) {
 		--switchback-columns-active: var(--switchback-columns-tablet, var(--switchback-columns-desktop, var(--switchback-columns, 2)));
 	}

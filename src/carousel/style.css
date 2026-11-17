@@ -33,6 +33,10 @@ html:has(.switchback-track.has-visible-overflow.is-ready) body {
 	--switchback-gap: 1.5rem;
 	position: relative;
 
+	/*
+	 * responsive-switch: no-JS fallback columns. Matches LEGACY_BREAKPOINTS in
+	 * includes/responsive.php; see docs/responsive-styles.md.
+	 */
 	@media (max-width: 781px) {
 		--switchback-columns-active: var(--switchback-columns-tablet);
 	}

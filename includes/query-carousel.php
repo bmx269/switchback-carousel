@@ -59,30 +59,12 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 	$rtl   = 'auto' === ( $settings['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === ( $settings['direction'] ?? '' );
 	$fluid = ! $fade && ! empty( $layout['fluid'] );
 
-	$device  = static function ( array $d, array $fallback ) {
-		return array(
-			'columns' => bounded_int( $d['columns'] ?? null, 1, 8, $fallback['columns'] ),
-			'step'    => bounded_int( $d['step'] ?? null, 1, 8, $fallback['step'] ),
-			'peek'    => bounded_int( $d['peek'] ?? null, 0, 45, $fallback['peek'] ),
-		);
-	};
-	$desktop = $device(
-		(array) ( $layout['desktop'] ?? array() ),
-		array(
-			'columns' => 3,
-			'step'    => 1,
-			'peek'    => 0,
-		)
-	);
-	$tablet  = $device( (array) ( $layout['tablet'] ?? array() ), $desktop );
-	$mobile  = $device(
-		(array) ( $layout['mobile'] ?? array() ),
-		array(
-			'columns' => 1,
-			'step'    => 1,
-			'peek'    => 0,
-		)
-	);
+	// Per-device layout from either storage shape; see responsive.php.
+	$devices     = resolve_device_layouts( $layout, (array) ( $block_attrs['style'] ?? array() ) );
+	$desktop     = $devices['desktop'];
+	$tablet      = $devices['tablet'];
+	$mobile      = $devices['mobile'];
+	$breakpoints = viewport_breakpoints();
 
 	$per_device = static function ( array $d ) use ( $fade, $rtl ) {
 		if ( $fade ) {
@@ -173,8 +155,8 @@ function splide_options_from_settings( array $settings, array $block_attrs = arr
 			'breakpoints'   => $fluid
 				? $fluid_breakpoints
 				: array(
-					781 => $per_device( $tablet ),
-					480 => $per_device( $mobile ),
+					$breakpoints['tablet'] => $per_device( $tablet ),
+					$breakpoints['mobile'] => $per_device( $mobile ),
 				),
 		)
 	);

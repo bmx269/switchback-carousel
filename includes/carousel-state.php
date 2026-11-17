@@ -51,16 +51,15 @@ function derive_state( array $parsed_carousel ): array {
 	$attrs  = (array) ( $track['attrs'] ?? array() );
 	$motion = (array) ( $attrs['motion'] ?? array() );
 	$auto   = (array) ( $attrs['autoplay'] ?? array() );
-	$layout = (array) ( $attrs['layout'] ?? array() );
 
 	$state['loop']     = one_of( $motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
 	$state['autoplay'] = ! empty( $auto['enabled'] );
 
 	// Fade shows one slide at a time regardless of columns.
 	if ( 'fade' !== ( $motion['transition'] ?? 'slide' ) ) {
-		$desktop          = (array) ( $layout['desktop'] ?? array() );
-		$state['perPage'] = bounded_int( $desktop['columns'] ?? null, 1, 8, 3 );
-		$state['perMove'] = min( bounded_int( $desktop['step'] ?? null, 1, 8, 1 ), $state['perPage'] );
+		$desktop          = resolve_device_layouts( (array) ( $attrs['layout'] ?? array() ), (array) ( $attrs['style'] ?? array() ) )['desktop'];
+		$state['perPage'] = $desktop['columns'];
+		$state['perMove'] = min( $desktop['step'], $state['perPage'] );
 	}
 
 	foreach ( $track['innerBlocks'] ?? array() as $inner ) {

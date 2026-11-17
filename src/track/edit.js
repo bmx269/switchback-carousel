@@ -11,7 +11,7 @@ import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 import { useEffect, useRef } from '@wordpress/element';
 
 import Inspector from './inspector';
-import { useDevice } from '../shared/device';
+import { useEditingDevice } from '../shared/device';
 import { layoutFor } from '../shared/responsive';
 import { layoutFingerprint, mirrorLayout } from '../shared/layout-sync';
 
@@ -142,11 +142,12 @@ export default function Edit( props ) {
 	const { attributes, clientId } = props;
 	const { layout, motion, slideWidth, linkedLayout, style } = attributes;
 
-	const device = useDevice();
+	const device = useEditingDevice();
 	const { columns, peek } = layoutFor(
 		layout,
 		device,
-		'fade' === motion?.transition
+		'fade' === motion?.transition,
+		style
 	);
 
 	const blockProps = useBlockProps( {

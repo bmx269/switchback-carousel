@@ -18,44 +18,26 @@ use function SwitchbackCarousel\bounded_int;
 use function SwitchbackCarousel\horizontal_gap;
 use function SwitchbackCarousel\lazy_slide_images;
 use function SwitchbackCarousel\one_of;
+use function SwitchbackCarousel\resolve_device_layouts;
+use function SwitchbackCarousel\viewport_breakpoints;
 
 defined( 'ABSPATH' ) || exit;
 
 $switchback_carousel_motion   = (array) ( $attributes['motion'] ?? array() );
 $switchback_carousel_autoplay = (array) ( $attributes['autoplay'] ?? array() );
 $switchback_carousel_edges    = (array) ( $attributes['edges'] ?? array() );
-$switchback_carousel_layout   = (array) ( $attributes['layout'] ?? array() );
 $switchback_carousel_width    = (array) ( $attributes['slideWidth'] ?? array() );
 
 $switchback_carousel_fade = 'fade' === ( $switchback_carousel_motion['transition'] ?? 'slide' );
 $switchback_carousel_loop = one_of( $switchback_carousel_motion['loop'] ?? 'none', array( 'none', 'loop', 'rewind' ) );
 $switchback_carousel_rtl  = 'auto' === ( $attributes['direction'] ?? 'auto' ) ? is_rtl() : 'rtl' === $attributes['direction'];
 
-$switchback_carousel_device = static function ( array $settings, array $fallback ): array {
-	return array(
-		'columns' => bounded_int( $settings['columns'] ?? null, 1, 8, $fallback['columns'] ),
-		'step'    => bounded_int( $settings['step'] ?? null, 1, 8, $fallback['step'] ),
-		'peek'    => bounded_int( $settings['peek'] ?? null, 0, 45, $fallback['peek'] ),
-	);
-};
-
-$switchback_carousel_desktop = $switchback_carousel_device(
-	(array) ( $switchback_carousel_layout['desktop'] ?? array() ),
-	array(
-		'columns' => 3,
-		'step'    => 1,
-		'peek'    => 0,
-	)
-);
-$switchback_carousel_tablet  = $switchback_carousel_device( (array) ( $switchback_carousel_layout['tablet'] ?? array() ), $switchback_carousel_desktop );
-$switchback_carousel_mobile  = $switchback_carousel_device(
-	(array) ( $switchback_carousel_layout['mobile'] ?? array() ),
-	array(
-		'columns' => 1,
-		'step'    => 1,
-		'peek'    => 0,
-	)
-);
+// Per-device layout from either storage shape; see includes/responsive.php.
+$switchback_carousel_devices     = resolve_device_layouts( (array) ( $attributes['layout'] ?? array() ), (array) ( $attributes['style'] ?? array() ) );
+$switchback_carousel_desktop     = $switchback_carousel_devices['desktop'];
+$switchback_carousel_tablet      = $switchback_carousel_devices['tablet'];
+$switchback_carousel_mobile      = $switchback_carousel_devices['mobile'];
+$switchback_carousel_breakpoints = viewport_breakpoints();
 
 $switchback_carousel_splide_layout = static function ( array $device ) use ( $switchback_carousel_fade, $switchback_carousel_rtl ): array {
 	if ( $switchback_carousel_fade ) {
@@ -112,8 +94,8 @@ $switchback_carousel_options = array_merge(
 			'autoplay'    => 'pause',
 		),
 		'breakpoints'   => array(
-			781 => $switchback_carousel_splide_layout( $switchback_carousel_tablet ),
-			480 => $switchback_carousel_splide_layout( $switchback_carousel_mobile ),
+			$switchback_carousel_breakpoints['tablet'] => $switchback_carousel_splide_layout( $switchback_carousel_tablet ),
+			$switchback_carousel_breakpoints['mobile'] => $switchback_carousel_splide_layout( $switchback_carousel_mobile ),
 		),
 	)
 );

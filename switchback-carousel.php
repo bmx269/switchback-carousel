@@ -24,12 +24,18 @@ const DIR     = __DIR__;
 const BLOCKS  = array( 'carousel', 'track', 'slide', 'controls' );
 
 require_once DIR . '/includes/support.php';
+require_once DIR . '/includes/responsive.php';
 require_once DIR . '/includes/icons.php';
 require_once DIR . '/includes/class-tokens.php';
 require_once DIR . '/includes/patterns.php';
 require_once DIR . '/includes/carousel-state.php';
 require_once DIR . '/includes/query-carousel.php';
 require_once DIR . '/includes/token-expansion.php';
+
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	require_once DIR . '/includes/class-cli.php';
+	\WP_CLI::add_command( 'switchback', CLI::class );
+}
 
 add_action(
 	'init',
@@ -46,6 +52,15 @@ add_action(
 		$handle = generate_block_asset_handle( 'switchback-carousel/track', 'editorScript' );
 		if ( wp_script_is( $handle, 'registered' ) ) {
 			wp_set_script_translations( $handle, 'switchback-carousel' );
+		}
+
+		// Tell both editor bundles where per-device layout is stored.
+		$responsive = 'window.switchbackResponsive = ' . wp_json_encode( array( 'core' => uses_core_responsive() ) ) . ';';
+		foreach ( array( 'carousel', 'track' ) as $block ) {
+			$editor = generate_block_asset_handle( 'switchback-carousel/' . $block, 'editorScript' );
+			if ( wp_script_is( $editor, 'registered' ) ) {
+				wp_add_inline_script( $editor, $responsive, 'before' );
+			}
 		}
 	}
 );
