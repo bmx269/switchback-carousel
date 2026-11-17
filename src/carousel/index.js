@@ -11,7 +11,7 @@ import {
 	useBlockProps,
 	useInnerBlocksProps,
 } from '@wordpress/block-editor';
-import { PanelBody, ToggleControl } from '@wordpress/components';
+import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
 import metadata from './block.json';
 import './style.css';
@@ -42,7 +42,10 @@ const TEMPLATE = [
 	[ 'switchback-carousel/controls', { control: 'arrows' } ],
 ];
 
-function Edit( { attributes: { overlayControls, layout }, setAttributes } ) {
+function Edit( {
+	attributes: { overlayControls, label, layout },
+	setAttributes,
+} ) {
 	const blockProps = useBlockProps( {
 		className: overlayControls
 			? 'switchback has-overlay-controls'
@@ -73,6 +76,23 @@ function Edit( { attributes: { overlayControls, layout }, setAttributes } ) {
 						checked={ overlayControls }
 						onChange={ ( value ) =>
 							setAttributes( { overlayControls: value } )
+						}
+					/>
+				</PanelBody>
+				<PanelBody
+					title={ __( 'Accessibility', 'switchback-carousel' ) }
+				>
+					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label={ __( 'Carousel name', 'switchback-carousel' ) }
+						help={ __(
+							'Screen readers announce this name with the carousel, so visitors can tell several carousels apart. Leave it empty to use the heading inside or just before the carousel.',
+							'switchback-carousel'
+						) }
+						value={ label }
+						onChange={ ( value ) =>
+							setAttributes( { label: value } )
 						}
 					/>
 				</PanelBody>

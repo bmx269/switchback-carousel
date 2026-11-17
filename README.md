@@ -59,6 +59,7 @@ Carousels are easy to get wrong for keyboard, screen reader and motion-sensitive
 
 ### Added by Switchback
 
+- **A name for every carousel.** Screen readers list a page's carousels by name, so each one needs its own. Set **Carousel name** in the Switchback Carousel block's Accessibility panel, or leave it empty and the carousel takes its name from its heading: one inside the carousel but outside the slides, or the nearest one just before it. Only a carousel with neither is called "Carousel".
 - **A focusable track.** The track takes focus itself (`tabindex="0"`), so arrow keys work even when the slides contain nothing focusable, and it shows a visible focus outline.
 - **Continuous autoplay respects reduced motion too.** Splide's reduced-motion setting doesn't cover its Auto Scroll extension, so Switchback holds continuous carousels (logo marquees) still for those visitors. They can still start one with the Play button.
 - **Real buttons with labels.** Previous and next arrows are `<button>`s labelled "Previous slide" and "Next slide", and their icons are hidden from screen readers. Without looping, they're disabled at the first and last slide.
@@ -74,6 +75,7 @@ Carousels are easy to get wrong for keyboard, screen reader and motion-sensitive
 
 Switchback handles the carousel. The content inside it is yours:
 
+- Give each carousel a heading, or a **Carousel name** when it has none (a full-width hero, say).
 - Give images in slides alt text, or mark them decorative.
 - Keep text on images readable: a Cover block's overlay helps with contrast.
 - Add a **Play/pause** control to any carousel that autoplays. [WCAG 2.2.2](https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html) asks for a way to stop motion that lasts more than five seconds. Pausing on focus and hover helps, but doesn't replace the button.

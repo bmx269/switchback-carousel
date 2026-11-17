@@ -787,7 +787,11 @@ function run(): void {
 				),
 			)
 		),
-		array( 'align' => 'full' )
+		// The hero has no heading of its own outside the slides, so name it.
+		array(
+			'align' => 'full',
+			'label' => 'Switchback Carousel highlights',
+		)
 	);
 
 	// 2. Hand-built feature cards: linked layout, header row with arrows, progress line.

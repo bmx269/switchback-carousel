@@ -66,6 +66,60 @@ function belongingTo( carousel, selector ) {
 	);
 }
 
+const HEADINGS = 'h1, h2, h3, h4, h5, h6';
+let headingIds = 0;
+
+/**
+ * The accessible name for a carousel, as Splide `label`/`labelledby`
+ * options. Without one, every carousel on a page is announced as just
+ * "Carousel". In order:
+ *
+ * 1. The Carousel name setting (data-switchback-label on the wrapper).
+ * 2. A heading inside the carousel but outside the slides, such as a
+ *    header row above the track.
+ * 3. The nearest heading just before the carousel, among its previous
+ *    siblings. It doesn't look further up the page, so an unrelated heading
+ *    (the page title) never names a carousel.
+ *
+ * Otherwise the server-rendered aria-label ("Carousel") stays.
+ *
+ * @param {Element} track Track element.
+ * @param {Element} root  Carousel root.
+ * @return {Object} Splide options.
+ */
+function accessibleName( track, root ) {
+	const wrapper = track.closest( '.switchback' );
+	const named = wrapper?.dataset.switchbackLabel?.trim();
+	if ( named ) {
+		return { label: named, labelledby: '' };
+	}
+
+	const outsideCarousels = ( heading ) =>
+		! heading.closest( '.switchback, .switchback-track' );
+	let heading = wrapper
+		? belongingTo( root, HEADINGS ).find(
+				( candidate ) => ! track.contains( candidate )
+		  )
+		: null;
+	for (
+		let sibling = ( wrapper || track ).previousElementSibling;
+		! heading && sibling;
+		sibling = sibling.previousElementSibling
+	) {
+		const candidates = sibling.matches( HEADINGS )
+			? [ sibling ]
+			: Array.from( sibling.querySelectorAll( HEADINGS ) );
+		heading = candidates.filter( outsideCarousels ).pop();
+	}
+	if ( ! heading?.textContent.trim() ) {
+		return {};
+	}
+	if ( ! heading.id ) {
+		heading.id = `switchback-heading-${ ++headingIds }`;
+	}
+	return { label: '', labelledby: heading.id };
+}
+
 class Carousel {
 	constructor( track ) {
 		this.track = track;
@@ -87,7 +141,11 @@ class Carousel {
 		// neighbouring slide (with focus: center, about a fifth of a slide).
 		track.classList.add( 'is-ready' );
 
-		const options = { ...this.config.splide, i18n: SPLIDE_I18N };
+		const options = {
+			...this.config.splide,
+			...accessibleName( track, this.root ),
+			i18n: SPLIDE_I18N,
+		};
 		// Splide's reducedMotion option pauses its own autoplay, but the
 		// AutoScroll extension ignores it: hold a continuous flow still for
 		// visitors who prefer reduced motion. The play button still starts it.
