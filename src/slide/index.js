@@ -74,9 +74,14 @@ function CopyLayout( { clientId } ) {
 	);
 }
 
-function SlideEdit( { clientId } ) {
+function SlideEdit( { attributes: { layout }, clientId } ) {
+	// Pass the layout explicitly, as the carousel does: without a saved
+	// layout attribute, WordPress 7.1 gives inner blocks the flow layout, so
+	// a full-width cover or wide group in a slide loses its alignment and
+	// shrinks to the content width in the editor (the front end is fine).
 	const innerBlocksProps = useInnerBlocksProps( useBlockProps(), {
 		template: TEMPLATE,
+		layout: layout?.type ? layout : { ...layout, type: 'constrained' },
 	} );
 	return (
 		<>
