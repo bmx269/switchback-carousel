@@ -13,17 +13,35 @@ const out = path.join( here, '..', '..', '.wordpress-org' );
 	const browser = await chromium.launch();
 
 	for ( const size of [ 128, 256 ] ) {
-		const page = await browser.newPage( { viewport: { width: size, height: size } } );
-		await page.setContent( `<style>html,body{margin:0;background:transparent}svg{display:block;width:${ size }px;height:${ size }px}</style>${ fs.readFileSync( path.join( here, 'icon.svg' ), 'utf8' ) }` );
+		const page = await browser.newPage( {
+			viewport: { width: size, height: size },
+		} );
+		await page.setContent(
+			`<style>html,body{margin:0;background:transparent}svg{display:block;width:${ size }px;height:${ size }px}</style>${ fs.readFileSync( path.join( here, 'icon.svg' ), 'utf8' ) }`
+		);
 		await page.waitForLoadState( 'networkidle' );
-		await page.screenshot( { path: path.join( out, `icon-${ size }x${ size }.png` ), omitBackground: true } );
+		await page.screenshot( {
+			path: path.join( out, `icon-${ size }x${ size }.png` ),
+			omitBackground: true,
+		} );
 		await page.close();
 	}
 
-	for ( const [ width, scale ] of [ [ 772, 0.5 ], [ 1544, 1 ] ] ) {
-		const page = await browser.newPage( { viewport: { width: 1544, height: 500 }, deviceScaleFactor: scale } );
+	for ( const [ width, scale ] of [
+		[ 772, 0.5 ],
+		[ 1544, 1 ],
+	] ) {
+		const page = await browser.newPage( {
+			viewport: { width: 1544, height: 500 },
+			deviceScaleFactor: scale,
+		} );
 		await page.goto( 'file://' + path.join( here, 'banner.html' ) );
-		await page.locator( '#banner' ).screenshot( { path: path.join( out, `banner-${ width }x${ Math.round( 500 * scale ) }.png` ) } );
+		await page.locator( '#banner' ).screenshot( {
+			path: path.join(
+				out,
+				`banner-${ width }x${ Math.round( 500 * scale ) }.png`
+			),
+		} );
 		await page.close();
 	}
 

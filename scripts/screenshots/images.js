@@ -6,7 +6,14 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const { chromium } = require( '@playwright/test' );
 
-const out = path.join( __dirname, '..', '..', 'artifacts', 'screenshots', 'images' );
+const out = path.join(
+	__dirname,
+	'..',
+	'..',
+	'artifacts',
+	'screenshots',
+	'images'
+);
 
 // [ sky top, sky bottom, far hills, near hills, sun ]
 const SCENES = [
@@ -27,7 +34,9 @@ function scene( [ top, bottom, far, near, sun ], seed ) {
 		let d = `M0 800 L0 ${ base }`;
 		for ( let i = 0; i <= count; i++ ) {
 			const x = ( 1200 / count ) * i;
-			const y = base - amp * ( 0.4 + r( i + offset ) * 0.6 ) * ( i % 2 ? 1 : 0.35 );
+			const y =
+				base -
+				amp * ( 0.4 + r( i + offset ) * 0.6 ) * ( i % 2 ? 1 : 0.35 );
 			d += ` L${ x.toFixed( 0 ) } ${ y.toFixed( 0 ) }`;
 		}
 		return d + ' L1200 800 Z';
@@ -45,10 +54,18 @@ function scene( [ top, bottom, far, near, sun ], seed ) {
 ( async () => {
 	fs.mkdirSync( out, { recursive: true } );
 	const browser = await chromium.launch();
-	const page = await browser.newPage( { viewport: { width: 1200, height: 800 } } );
+	const page = await browser.newPage( {
+		viewport: { width: 1200, height: 800 },
+	} );
 	for ( const [ index, colours ] of SCENES.entries() ) {
-		await page.setContent( `<style>html,body{margin:0}</style>${ scene( colours, index + 3 ) }` );
-		await page.screenshot( { path: path.join( out, `trail-${ index + 1 }.jpg` ), type: 'jpeg', quality: 85 } );
+		await page.setContent(
+			`<style>html,body{margin:0}</style>${ scene( colours, index + 3 ) }`
+		);
+		await page.screenshot( {
+			path: path.join( out, `trail-${ index + 1 }.jpg` ),
+			type: 'jpeg',
+			quality: 85,
+		} );
 	}
 	await browser.close();
 } )();

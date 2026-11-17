@@ -15,7 +15,9 @@ const shot = ( name ) => path.join( out, name );
 
 async function pageId( page, slug ) {
 	// Published pages are public; an empty nonce would make REST reject the request.
-	const response = await page.request.get( `${ BASE }/?rest_route=/wp/v2/pages&slug=${ slug }&_fields=id` );
+	const response = await page.request.get(
+		`${ BASE }/?rest_route=/wp/v2/pages&slug=${ slug }&_fields=id`
+	);
 	return ( await response.json() )[ 0 ].id;
 }
 
@@ -23,10 +25,18 @@ async function openEditor( page, slug ) {
 	await page.goto( `${ BASE }/wp-admin/` );
 	const id = await pageId( page, slug );
 	await page.goto( `${ BASE }/wp-admin/post.php?post=${ id }&action=edit` );
-	await page.waitForFunction( () => window.wp?.data?.select( 'core/block-editor' )?.getBlocks().length > 0 );
+	await page.waitForFunction(
+		() =>
+			window.wp?.data?.select( 'core/block-editor' )?.getBlocks().length >
+			0
+	);
 	await page.evaluate( () => {
 		const { dispatch } = window.wp.data;
-		dispatch( 'core/preferences' ).set( 'core/edit-post', 'welcomeGuide', false );
+		dispatch( 'core/preferences' ).set(
+			'core/edit-post',
+			'welcomeGuide',
+			false
+		);
 		dispatch( 'core/preferences' ).set( 'core', 'fixedToolbar', false );
 		dispatch( 'core/edit-post' ).openGeneralSidebar?.( 'edit-post/block' );
 	} );
@@ -38,7 +48,8 @@ async function select( page, name, index = 0 ) {
 	await page.evaluate(
 		( [ blockName, at ] ) => {
 			const { select: read, dispatch } = window.wp.data;
-			const ids = read( 'core/block-editor' ).getBlocksByName( blockName );
+			const ids =
+				read( 'core/block-editor' ).getBlocksByName( blockName );
 			dispatch( 'core/block-editor' ).selectBlock( ids[ at ] );
 		},
 		[ name, index ]
@@ -59,8 +70,14 @@ async function sidebarScrollTo( page, text ) {
 }
 
 async function panel( page, title, open = true ) {
-	const toggle = page.locator( '.interface-complementary-area .components-panel__body-toggle', { hasText: title } ).first();
-	const expanded = ( await toggle.getAttribute( 'aria-expanded' ) ) === 'true';
+	const toggle = page
+		.locator(
+			'.interface-complementary-area .components-panel__body-toggle',
+			{ hasText: title }
+		)
+		.first();
+	const expanded =
+		( await toggle.getAttribute( 'aria-expanded' ) ) === 'true';
 	if ( expanded !== open ) {
 		await toggle.click();
 		await toggle.blur();
@@ -69,7 +86,9 @@ async function panel( page, title, open = true ) {
 
 ( async () => {
 	const browser = await chromium.launch();
-	const context = await browser.newContext( { viewport: { width: 1440, height: 900 } } );
+	const context = await browser.newContext( {
+		viewport: { width: 1440, height: 900 },
+	} );
 	const page = await context.newPage();
 
 	// Log in.
@@ -80,13 +99,20 @@ async function panel( page, title, open = true ) {
 	await page.waitForURL( /wp-admin/ );
 
 	// 1. Front end posts carousel with overlay arrows.
-	const front = await browser.newPage( { viewport: { width: 1280, height: 720 } } );
+	const front = await browser.newPage( {
+		viewport: { width: 1280, height: 720 },
+	} );
 	await front.goto( `${ BASE }/?pagename=trail-journal` );
 	await front.waitForSelector( '.switchback-track.is-ready' );
 	await front.locator( '.switchback-controls__next' ).first().hover();
 	await front.waitForTimeout( 400 );
-	const journal = await front.locator( 'h1.wp-block-post-title' ).boundingBox();
-	await front.screenshot( { path: shot( 'screenshot-1.png' ), clip: { x: 0, y: journal.y - 48, width: 1280, height: 640 } } );
+	const journal = await front
+		.locator( 'h1.wp-block-post-title' )
+		.boundingBox();
+	await front.screenshot( {
+		path: shot( 'screenshot-1.png' ),
+		clip: { x: 0, y: journal.y - 48, width: 1280, height: 640 },
+	} );
 
 	// 4. Feature cards and quote rotator.
 	await front.setViewportSize( { width: 1280, height: 1000 } );
@@ -94,7 +120,10 @@ async function panel( page, title, open = true ) {
 	await front.waitForSelector( '.switchback-track.is-ready' );
 	await front.mouse.move( 0, 0 );
 	const tips = await front.locator( 'h1.wp-block-post-title' ).boundingBox();
-	await front.screenshot( { path: shot( 'screenshot-4.png' ), clip: { x: 0, y: tips.y - 48, width: 1280, height: 760 } } );
+	await front.screenshot( {
+		path: shot( 'screenshot-4.png' ),
+		clip: { x: 0, y: tips.y - 48, width: 1280, height: 760 },
+	} );
 	await front.close();
 
 	// 2. A Query Loop shown as a carousel: the Carousel display panel.
@@ -107,7 +136,9 @@ async function panel( page, title, open = true ) {
 
 	// 3. Advanced Query Loop's meta query filtering the same carousel.
 	await panel( page, 'Carousel display', false );
-	await page.getByRole( 'button', { name: 'Open Post Meta query builder' } ).click();
+	await page
+		.getByRole( 'button', { name: 'Open Post Meta query builder' } )
+		.click();
 	await page.waitForTimeout( 800 );
 	await page.screenshot( { path: shot( 'screenshot-3.png' ) } );
 	await page.keyboard.press( 'Escape' );
@@ -119,12 +150,16 @@ async function panel( page, title, open = true ) {
 
 	// 6. Layout per device.
 	await select( page, 'switchback-carousel/track' );
-	await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).setDeviceType( 'Tablet' ) );
+	await page.evaluate( () =>
+		window.wp.data.dispatch( 'core/editor' ).setDeviceType( 'Tablet' )
+	);
 	await page.waitForTimeout( 1500 );
 	await panel( page, 'Slides', false );
 	await panel( page, 'Layout', true );
 	await page.screenshot( { path: shot( 'screenshot-6.png' ) } );
-	await page.evaluate( () => window.wp.data.dispatch( 'core/editor' ).setDeviceType( 'Desktop' ) );
+	await page.evaluate( () =>
+		window.wp.data.dispatch( 'core/editor' ).setDeviceType( 'Desktop' )
+	);
 
 	await browser.close();
 } )();
