@@ -4,7 +4,7 @@ Tags: carousel, slider, slideshow, posts carousel, blocks
 Requires at least: 6.7
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 1.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -109,7 +109,7 @@ The content is still yours: give each carousel a heading or a Carousel name, giv
 
 == Changelog ==
 
-= 1.1.0 =
+= 0.2.0 =
 * New: "Lazy-load images" track setting. Images in later slides load as the carousel reaches them instead of with the page.
 * New: "Carousel name" setting in the Switchback Carousel block's Accessibility panel. Without it, each carousel is named after its heading, so screen readers no longer announce every carousel on a page as just "Carousel".
 * Accessibility: continuous autoplay (Auto Scroll) now stays paused for visitors who prefer reduced motion, like step-by-step autoplay already did. The Play button still starts it.
@@ -119,12 +119,12 @@ The content is still yours: give each carousel a heading or a Carousel name, giv
 * Fix: the progress bar track stays visible in browsers without color-mix().
 * Development: stylesheets are now native nested CSS, flattened at build time with postcss-nesting, instead of Sass.
 
-= 1.0.0 =
+= 0.1.0 =
 * Initial release.
 
 == Upgrade Notice ==
 
-= 1.0.0 =
+= 0.1.0 =
 Initial release.
 
 == Credits ==
