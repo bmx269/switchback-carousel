@@ -99,7 +99,7 @@ function accessibleName( track, root ) {
 	let heading = wrapper
 		? belongingTo( root, HEADINGS ).find(
 				( candidate ) => ! track.contains( candidate )
-		  )
+			)
 		: null;
 	for (
 		let sibling = ( wrapper || track ).previousElementSibling;
@@ -149,7 +149,9 @@ class Carousel {
 		// Splide's reducedMotion option pauses its own autoplay, but the
 		// AutoScroll extension ignores it: hold a continuous flow still for
 		// visitors who prefer reduced motion. The play button still starts it.
-		const reduced = window.matchMedia?.( '(prefers-reduced-motion: reduce)' );
+		const reduced = window.matchMedia?.(
+			'(prefers-reduced-motion: reduce)'
+		);
 		if ( options.autoScroll && reduced?.matches ) {
 			options.autoScroll = { ...options.autoScroll, autoStart: false };
 		}

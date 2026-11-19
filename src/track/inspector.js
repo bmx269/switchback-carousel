@@ -58,24 +58,22 @@ function LayoutControls( { layout, style, fade, setLayout } ) {
 	const stored = storedLayouts( layout, style )[ key ];
 	const inherits = 'desktop' !== key;
 	const set = ( changes ) => setLayout( key, changes );
+	const editing = usesCoreResponsive()
+		? /* translators: %s: device, e.g. "tablet". */
+			__(
+				'Editing the %s layout. Switch the responsive style viewport to change the others.',
+				'switchback-carousel'
+			)
+		: /* translators: %s: device, e.g. "tablet". */
+			__(
+				'Editing the %s layout. Switch the editor preview (Desktop, Tablet, Mobile) to change the others.',
+				'switchback-carousel'
+			);
 
 	return (
 		<>
 			<p className="components-base-control__help">
-				{ sprintf(
-					usesCoreResponsive()
-						? /* translators: %s: device, e.g. "tablet". */
-							__(
-								'Editing the %s layout. Switch the responsive style viewport to change the others.',
-								'switchback-carousel'
-							)
-						: /* translators: %s: device, e.g. "tablet". */
-							__(
-								'Editing the %s layout. Switch the editor preview (Desktop, Tablet, Mobile) to change the others.',
-								'switchback-carousel'
-							),
-					DEVICES[ key ]
-				) }
+				{ sprintf( editing, DEVICES[ key ] ) }
 			</p>
 			<RangeControl
 				__next40pxDefaultSize

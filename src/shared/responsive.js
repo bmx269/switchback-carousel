@@ -107,12 +107,12 @@ export function layoutFor(
 /**
  * Attribute changes that set some fields for one device.
  *
- * @param {Object}  current         Current `{ layout, style }`.
- * @param {Object}  current.layout  Legacy `layout` value.
- * @param {Object}  current.style   The block's `style` attribute.
- * @param {string}  key             desktop | tablet | mobile.
- * @param {Object}  changes         Fields to set; undefined clears a field.
- * @param {boolean} [core]          Write core style states (default: the flag).
+ * @param {Object}  current        Current `{ layout, style }`.
+ * @param {Object}  current.layout Legacy `layout` value.
+ * @param {Object}  current.style  The block's `style` attribute.
+ * @param {string}  key            desktop | tablet | mobile.
+ * @param {Object}  changes        Fields to set; undefined clears a field.
+ * @param {boolean} [core]         Write core style states (default: the flag).
  * @return {{layout:Object, style:Object|undefined}} New `layout` and `style`.
  */
 export function writeDeviceLayout(
