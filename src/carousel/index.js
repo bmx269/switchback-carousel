@@ -14,6 +14,7 @@ import {
 import { PanelBody, TextControl, ToggleControl } from '@wordpress/components';
 
 import metadata from './block.json';
+import AddSlideButton from '../shared/add-slide';
 import './style.css';
 import './editor.css';
 
@@ -45,6 +46,7 @@ const TEMPLATE = [
 function Edit( {
 	attributes: { overlayControls, label, layout },
 	setAttributes,
+	clientId,
 } ) {
 	const blockProps = useBlockProps( {
 		className: overlayControls
@@ -61,6 +63,7 @@ function Edit( {
 
 	return (
 		<>
+			<AddSlideButton clientId={ clientId } />
 			<InspectorControls>
 				<PanelBody title={ __( 'Controls', 'switchback-carousel' ) }>
 					<ToggleControl

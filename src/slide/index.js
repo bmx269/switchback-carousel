@@ -13,6 +13,7 @@ import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 
 import metadata from './block.json';
 import { mirrorLayout } from '../shared/layout-sync';
+import AddSlideButton from '../shared/add-slide';
 
 const TEMPLATE = [
 	[
@@ -85,6 +86,7 @@ function SlideEdit( { attributes: { layout }, clientId } ) {
 	} );
 	return (
 		<>
+			<AddSlideButton clientId={ clientId } />
 			<InspectorControls>
 				<CopyLayout clientId={ clientId } />
 			</InspectorControls>
@@ -94,6 +96,7 @@ function SlideEdit( { attributes: { layout }, clientId } ) {
 }
 
 registerBlockType( metadata.name, {
+	// One slide card above carousel pagination dots, the current one larger.
 	icon: (
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
@@ -101,7 +104,11 @@ registerBlockType( metadata.name, {
 			aria-hidden="true"
 			focusable="false"
 		>
-			<path d="M6 5h12a1.5 1.5 0 0 1 1.5 1.5v11A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5v-11A1.5 1.5 0 0 1 6 5Zm0 1.5v11h12v-11H6Z" />
+			<path d="M5 3h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm0 1.5a.5.5 0 0 0-.5.5v9a.5.5 0 0 0 .5.5h14a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H5Z" />
+			<path d="M6.5 7h7v1.5h-7V7Zm0 3h11v1.5h-11V10Z" />
+			<circle cx="12" cy="19.5" r="1.5" />
+			<circle cx="7.5" cy="19.5" r="1" />
+			<circle cx="16.5" cy="19.5" r="1" />
 		</svg>
 	),
 	edit: SlideEdit,

@@ -11,6 +11,7 @@ import { useDispatch, useRegistry, useSelect } from '@wordpress/data';
 import { useEffect, useRef } from '@wordpress/element';
 
 import Inspector from './inspector';
+import AddSlideButton from '../shared/add-slide';
 import { useEditingDevice } from '../shared/device';
 import { layoutFor } from '../shared/responsive';
 import { layoutFingerprint, mirrorLayout } from '../shared/layout-sync';
@@ -178,6 +179,7 @@ export default function Edit( props ) {
 	return (
 		<>
 			<Inspector { ...props } />
+			<AddSlideButton clientId={ clientId } />
 			<div { ...blockProps }>
 				<div { ...innerBlocksProps } />
 			</div>
